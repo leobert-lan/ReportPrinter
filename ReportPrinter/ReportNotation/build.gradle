@@ -1,0 +1,26 @@
+apply plugin: 'java-library'
+
+def ARTIFACT_ID = 'report-annotation'
+def VERSION_NAME = '1.0.0'
+def GROUP_ID = 'osp.leobert.android'
+
+ext {
+    bintrayName = ARTIFACT_ID
+    artifact = ARTIFACT_ID
+    libraryName = ARTIFACT_ID
+    libraryDescription = 'annotation for report'
+    libraryVersion = VERSION_NAME
+    licenseName = 'MIT'
+    licenseUrl = 'https://opensource.org/licenses/mit-license.html'
+    allLicenses = ["MIT"]
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+apply from: '../installv1.gradle'
+apply from: '../bintrayv1.gradle'
