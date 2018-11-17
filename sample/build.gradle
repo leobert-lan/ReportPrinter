@@ -33,7 +33,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    api "osp.leobert.android:ReportNotation:1.0.0"
-    annotationProcessor "osp.leobert.android:report-anno-compiler:1.0.0"
-//    annotationProcessor project(':report-anno-compiler')
+//    api "osp.leobert.android:ReportNotation:1.0.0"
+    api project(":ReportNotation")
+//    annotationProcessor "osp.leobert.android:report-anno-compiler:1.0.0"
+    annotationProcessor project(':report-anno-compiler')
+
+    implementation project(":DemoReporterExt")
+    annotationProcessor project(":DemoReporterExt")
 }

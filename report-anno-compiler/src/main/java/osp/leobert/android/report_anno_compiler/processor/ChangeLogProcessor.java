@@ -41,6 +41,7 @@ import static osp.leobert.android.report_anno_compiler.Consts.KEY_MODULE_NAME;
 @SupportedOptions(KEY_MODULE_NAME)
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedAnnotationTypes({ANNOTATION_TYPE_CHANGELOG})
+@Deprecated
 public class ChangeLogProcessor extends AbstractProcessor {
 
     private Logger logger;

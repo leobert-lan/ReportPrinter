@@ -19,7 +19,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.util.Elements;
 
 import osp.leobert.android.report_anno_compiler.bean.Issue;
 import osp.leobert.android.report_anno_compiler.utils.FileUtils;
@@ -42,11 +41,10 @@ import static osp.leobert.android.report_anno_compiler.Consts.KEY_MODULE_NAME;
 @SupportedOptions(KEY_MODULE_NAME)
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedAnnotationTypes({ANNOTATION_TYPE_BUG})
+@Deprecated
 public class BugProcessor extends AbstractProcessor {
 
     private Logger logger;
-
-    private Elements elements;
     private ArrayList<Issue> issues;
 
     private String module;
@@ -57,9 +55,6 @@ public class BugProcessor extends AbstractProcessor {
 
         issues = new ArrayList<>();
 
-//        mFiler = processingEnv.getFiler();
-//        types = processingEnv.getTypeUtils();
-        elements = processingEnv.getElementUtils();
         logger = new Logger(processingEnv.getMessager());
 
         Map<String, String> options = processingEnv.getOptions();
@@ -122,8 +117,6 @@ public class BugProcessor extends AbstractProcessor {
 
         if (element != null) {
             Element parent = element.getEnclosingElement();
-//            if (parent == null)
-//                return path;
             if (element.getKind().isClass() || element.getKind().isInterface()) {
                 String p = element.getEnclosingElement().toString();
                 String s = element.getSimpleName().toString();
