@@ -1,0 +1,12 @@
+auto generated, do not change !!!! 
+
+1.0.0
+CLASS :osp.leobert.android.reportsample.SampleClz
+[1, 2]
+
+
+1.0.0
+METHOD :osp.leobert.android.reportsample.SampleClz#foo(java.lang.Object)
+[f1, f2]
+
+
