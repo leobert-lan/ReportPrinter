@@ -44,7 +44,7 @@ import static osp.leobert.android.report_anno_compiler.Consts.KEY_MODULE_NAME;
  */
 @AutoService(Processor.class)
 @SupportedOptions(KEY_MODULE_NAME)
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+//@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ReportProcessor extends AbstractProcessor {
 
     private Set<ReporterExtension> extensions;
@@ -103,6 +103,11 @@ public class ReportProcessor extends AbstractProcessor {
             logger.warning(warning.toString());
             extensions = ImmutableSet.of();
         }
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
     }
 
     @Override
