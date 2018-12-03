@@ -9,6 +9,10 @@ package osp.leobert.android.report_anno_compiler;
  */
 public interface Consts {
     String KEY_MODULE_NAME = "module";
+    String MODE = "mode";
+
+    String MODE_CLASS = "mode_class";
+    String MODE_FILE = "mode_file";
 
     String PREFIX_OF_LOGGER = "[Report-Print-Compiler]-- ";
     String PKG = "osp.leobert.android.reportprinter.notation";

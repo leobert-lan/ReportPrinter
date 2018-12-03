@@ -18,9 +18,12 @@ public class Utils {
         return new String(ch);
     }
 
-    public static String genFileName(String type) {
-        String claName = "./Reports/" + firstCharUpperCase(type) + "Report.txt";
-        return new String(claName);
+    public static String genFileName(String type, String ext) {
+        return firstCharUpperCase(type) + "Report." + ext;
+    }
+
+    public static String genReporterClzName(String type) {
+        return firstCharUpperCase(type) + "Reporter";
     }
 
     public static String generateReportFilePath(String type, String ext) {

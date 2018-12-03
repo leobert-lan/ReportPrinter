@@ -2,6 +2,8 @@ package osp.leobert.android.reportsample;
 
 import org.junit.Test;
 
+import reporter.SampleDemoReporter;
+
 import static org.junit.Assert.*;
 
 /**
@@ -13,5 +15,10 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
+    }
+
+    @Test
+    public void printSampleDemoReporter() {
+        SampleDemoReporter.print("./Reports");
     }
 }

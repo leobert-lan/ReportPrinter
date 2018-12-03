@@ -1,7 +1,6 @@
 package osp.leobert.android.reportsample;
 
 import osp.leobert.android.reporter.demoext.Demo;
-import osp.leobert.android.reportprinter.notation.ChangeLog;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.reportsample </p>
@@ -10,17 +9,17 @@ import osp.leobert.android.reportprinter.notation.ChangeLog;
  * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2018/7/8.
  */
-@ChangeLog(version = "1.0.0",
-        changes = {
-                "1",
-                "2"})
+//@ChangeLog(version = "1.0.0",
+//        changes = {
+//                "1",
+//                "2"})
 @Demo(foo = "foo of demo notated at clz")
 public class SampleClz {
-    @ChangeLog(version = "1.0.0",
-            changes = {
-                    "f1",
-                    "f2"
-            })
+//    @ChangeLog(version = "1.0.0",
+//            changes = {
+//                    "f1",
+//                    "f2"
+//            })
     @Demo(foo = "foo of demo notated at function")
     private void foo(Object bar) {
 

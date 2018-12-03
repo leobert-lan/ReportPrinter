@@ -16,6 +16,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
@@ -25,6 +26,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import osp.leobert.android.report_anno_compiler.Mode;
 import osp.leobert.android.report_anno_compiler.utils.FileUtils;
 import osp.leobert.android.report_anno_compiler.utils.Logger;
 import osp.leobert.android.report_anno_compiler.utils.Utils;
@@ -33,6 +35,7 @@ import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
 
 import static osp.leobert.android.report_anno_compiler.Consts.KEY_MODULE_NAME;
+import static osp.leobert.android.report_anno_compiler.Consts.MODE;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler.processor </p>
@@ -42,7 +45,7 @@ import static osp.leobert.android.report_anno_compiler.Consts.KEY_MODULE_NAME;
  * Created by leobert on 2018/11/17.
  */
 @AutoService(Processor.class)
-@SupportedOptions(KEY_MODULE_NAME)
+@SupportedOptions({KEY_MODULE_NAME, MODE})
 //@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ReportProcessor extends AbstractProcessor {
 
@@ -53,6 +56,9 @@ public class ReportProcessor extends AbstractProcessor {
 
     private Elements elements;
     private String module;
+    private Mode _mode;
+
+    private Filer filer;
 
     public ReportProcessor() {
         this(ReportProcessor.class.getClassLoader());
@@ -69,15 +75,18 @@ public class ReportProcessor extends AbstractProcessor {
 
         elements = processingEnv.getElementUtils();
         logger = new Logger(processingEnv.getMessager());
-
+        String mode = "";
         Map<String, String> options = processingEnv.getOptions();
         if (MapUtils.isNotEmpty(options)) {
             module = options.get(KEY_MODULE_NAME);
-            logger.info(">>> module is " + module + " <<<");
+            mode = options.get(MODE);
+            logger.info(">>> module is " + module + "  mode is:" + mode + " <<<");
         }
         if (module == null || module.equals("")) {
             module = "default";
         }
+        _mode = Mode.customValueOf(mode);
+        filer = processingEnvironment.getFiler();
 
         try {
             extensions =
@@ -150,8 +159,12 @@ public class ReportProcessor extends AbstractProcessor {
                 if (result == null)
                     continue;
                 handleByAnyOne = handleByAnyOne | result.isHandled();
-                if (result.isHandled())
-                    generateReport(result);
+                if (result.isHandled()) {
+                    if (Mode.MODE_FILE.equals(_mode))
+                        generateReport(result);
+                    else
+                        generateExeReport(result);
+                }
             }
             return handleByAnyOne;
         }
@@ -202,5 +215,16 @@ public class ReportProcessor extends AbstractProcessor {
         } else {
             logger.info("generate failure");
         }
+    }
+
+    private void generateExeReport(Result result) {
+        String fileName = Utils.genFileName(module + result.getReportFileNamePrefix(), result.getFileExt());
+        logger.info("generate " + fileName);
+        FileUtils.generatePrinterClass(module, Utils.genReporterClzName(module + result.getReportFileNamePrefix()),
+                fileName,
+                result.getReportContent(),
+                filer);
+        logger.info("generate success");
+
     }
 }
