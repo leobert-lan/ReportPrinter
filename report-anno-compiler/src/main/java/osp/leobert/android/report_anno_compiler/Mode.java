@@ -4,7 +4,6 @@ package osp.leobert.android.report_anno_compiler;
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Mode </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2018/12/3.
  */
 public enum Mode {

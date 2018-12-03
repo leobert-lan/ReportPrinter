@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
 import osp.leobert.android.report_anno_compiler.Mode;
-import osp.leobert.android.report_anno_compiler.utils.FileUtils;
+import osp.leobert.android.report_anno_compiler.Writeable;
 import osp.leobert.android.report_anno_compiler.utils.Logger;
 import osp.leobert.android.report_anno_compiler.utils.Utils;
 import osp.leobert.android.reportprinter.spi.Model;
@@ -41,7 +42,7 @@ import static osp.leobert.android.report_anno_compiler.Consts.MODE;
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler.processor </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> ReportProcessor </p>
- * <p><b>Description:</b> TODO </p>
+ * <p><b>Description:</b> ReportProcessor </p>
  * Created by leobert on 2018/11/17.
  */
 @AutoService(Processor.class)
@@ -209,8 +210,8 @@ public class ReportProcessor extends AbstractProcessor {
     private void generateReport(Result result) {
         String fileName = Utils.generateReportFilePath(module + result.getReportFileNamePrefix(), result.getFileExt());
         logger.info("generate " + fileName);
-        if (FileUtils.createFile(fileName)) {
-            FileUtils.writeStringToFile(fileName, result.getReportContent(), false);
+        if (Utils.createFile(fileName)) {
+            Utils.writeStringToFile(fileName, result.getReportContent(), false);
             logger.info("generate success");
         } else {
             logger.info("generate failure");
@@ -220,10 +221,11 @@ public class ReportProcessor extends AbstractProcessor {
     private void generateExeReport(Result result) {
         String fileName = Utils.genFileName(module + result.getReportFileNamePrefix(), result.getFileExt());
         logger.info("generate " + fileName);
-        FileUtils.generatePrinterClass(module, Utils.genReporterClzName(module + result.getReportFileNamePrefix()),
+        Writeable writeable = Writeable.DirectionWriter.of(new File("./" + module + "/ext"));
+        Utils.generatePrinterClass(Utils.genReporterClzName(module + result.getReportFileNamePrefix()),
                 fileName,
                 result.getReportContent(),
-                filer);
+                writeable);
         logger.info("generate success");
 
     }
