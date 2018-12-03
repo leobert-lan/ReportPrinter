@@ -19,6 +19,6 @@ public class ExampleUnitTest {
 
     @Test
     public void printSampleDemoReporter() {
-        SampleDemoReporter.print("./Reports");
+        SampleDemoReporter.print("../Reports");
     }
 }
