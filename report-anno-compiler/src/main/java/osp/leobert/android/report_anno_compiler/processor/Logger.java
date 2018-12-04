@@ -1,9 +1,9 @@
-package osp.leobert.android.report_anno_compiler.utils;
+package osp.leobert.android.report_anno_compiler.processor;
 
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 
-import osp.leobert.android.report_anno_compiler.Consts;
+import osp.leobert.android.report_anno_compiler.processor.Consts;
 
 
 /**

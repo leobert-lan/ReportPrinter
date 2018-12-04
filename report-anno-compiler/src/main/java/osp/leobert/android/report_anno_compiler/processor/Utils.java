@@ -1,4 +1,4 @@
-package osp.leobert.android.report_anno_compiler.utils;
+package osp.leobert.android.report_anno_compiler.processor;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -8,12 +8,9 @@ import com.squareup.javapoet.TypeSpec;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import javax.lang.model.element.Modifier;
-
-import osp.leobert.android.report_anno_compiler.Writeable;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.issueprint.utils </p>
@@ -22,8 +19,8 @@ import osp.leobert.android.report_anno_compiler.Writeable;
  * <p><b>Description:</b> TODO </p>
  * Created by leobert on 13/04/2018.
  */
-public class Utils {
-    public static String firstCharUpperCase(String str) {
+/*public*/ class Utils {
+    static String firstCharUpperCase(String str) {
         char[] ch = str.toCharArray();
         if (ch[0] >= 'a' && ch[0] <= 'z') {
             ch[0] = (char) (ch[0] - 32);
@@ -31,23 +28,20 @@ public class Utils {
         return new String(ch);
     }
 
-    public static String genFileName(String type, String ext) {
+    static String genFileName(String type, String ext) {
         return firstCharUpperCase(type) + "Report." + ext;
     }
 
-    public static String genReporterClzName(String type) {
+    static String genReporterClzName(String type) {
         return firstCharUpperCase(type) + "Reporter";
     }
 
-    public static String generateReportFilePath(String type, String ext) {
+    static String generateReportFilePath(String type, String ext) {
         return "./Reports/" + firstCharUpperCase(type) + "Report." + ext;
     }
 
 
-    /**
-     * @param fileName
-     */
-    public static boolean createFile(String fileName) {
+    static boolean createFile(String fileName) {
         try {
             File file = new File(fileName);
             if (!file.exists()) {
@@ -63,11 +57,7 @@ public class Utils {
     }
 
 
-    /**
-     * @param fileName
-     * @param content
-     */
-    public static void writeStringToFile(String fileName, String content, boolean append) {
+    static void writeStringToFile(String fileName, String content, boolean append) {
         BufferedWriter out = null;
         OutputStreamWriter osw = null;
         FileOutputStream fileOutputStream = null;
@@ -79,14 +69,17 @@ public class Utils {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
+            close(out);
+            close(osw);
+            close(fileOutputStream);
+        }
+    }
+
+    private static void close(java.io.Closeable closeable) {
+        if (closeable != null) {
             try {
-                if (out != null)
-                    out.close();
-                if (osw != null)
-                    osw.close();
-                if (fileOutputStream != null)
-                    fileOutputStream.close();
-            } catch (IOException e) {
+                closeable.close();
+            } catch (java.io.IOException e) {
                 e.printStackTrace();
             }
         }
@@ -123,7 +116,7 @@ public class Utils {
                     "            }\n" +
                     "        }";
 
-    public static void generatePrinterClass(String clzName, String fileName, String content, Writeable writeable) {
+    static void generatePrinterClass(String clzName, String fileName, String content, Writeable writeable) {
 
         MethodSpec printMethodSpec = MethodSpec.methodBuilder("print")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)

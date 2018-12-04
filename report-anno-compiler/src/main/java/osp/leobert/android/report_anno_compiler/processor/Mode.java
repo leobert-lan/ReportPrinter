@@ -1,4 +1,4 @@
-package osp.leobert.android.report_anno_compiler;
+package osp.leobert.android.report_anno_compiler.processor;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler </p>
@@ -6,7 +6,7 @@ package osp.leobert.android.report_anno_compiler;
  * <p><b>Classname:</b> Mode </p>
  * Created by leobert on 2018/12/3.
  */
-public enum Mode {
+/*public*/ enum Mode {
     MODE_FILE(Consts.MODE_FILE), MODE_CLASS(Consts.MODE_CLASS);
 
     final String mode;

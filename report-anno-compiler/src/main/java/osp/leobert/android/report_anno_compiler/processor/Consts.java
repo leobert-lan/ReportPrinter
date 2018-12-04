@@ -1,4 +1,4 @@
-package osp.leobert.android.report_anno_compiler;
+package osp.leobert.android.report_anno_compiler.processor;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.issueprint </p>
@@ -7,7 +7,7 @@ package osp.leobert.android.report_anno_compiler;
  * <p><b>Description:</b> Consts </p>
  * Created by leobert on 13/04/2018.
  */
-public interface Consts {
+/*public*/ interface Consts {
     String KEY_MODULE_NAME = "module";
     String MODE = "mode";
 

@@ -1,4 +1,4 @@
-package osp.leobert.android.report_anno_compiler;
+package osp.leobert.android.report_anno_compiler.processor;
 
 import com.squareup.javapoet.JavaFile;
 
@@ -17,7 +17,7 @@ public interface Writeable {
     boolean write(JavaFile javaFile);
 
     class DirectionWriter implements Writeable {
-        public static Writeable of(File direction) {
+        static Writeable of(File direction) {
             return new DirectionWriter(direction);
         }
 

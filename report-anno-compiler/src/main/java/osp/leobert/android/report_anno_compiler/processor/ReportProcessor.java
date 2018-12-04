@@ -27,16 +27,12 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
-import osp.leobert.android.report_anno_compiler.Mode;
-import osp.leobert.android.report_anno_compiler.Writeable;
-import osp.leobert.android.report_anno_compiler.utils.Logger;
-import osp.leobert.android.report_anno_compiler.utils.Utils;
 import osp.leobert.android.reportprinter.spi.Model;
 import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
 
-import static osp.leobert.android.report_anno_compiler.Consts.KEY_MODULE_NAME;
-import static osp.leobert.android.report_anno_compiler.Consts.MODE;
+import static osp.leobert.android.report_anno_compiler.processor.Consts.KEY_MODULE_NAME;
+import static osp.leobert.android.report_anno_compiler.processor.Consts.MODE;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler.processor </p>
@@ -47,7 +43,6 @@ import static osp.leobert.android.report_anno_compiler.Consts.MODE;
  */
 @AutoService(Processor.class)
 @SupportedOptions({KEY_MODULE_NAME, MODE})
-//@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ReportProcessor extends AbstractProcessor {
 
     private Set<ReporterExtension> extensions;
@@ -71,13 +66,13 @@ public class ReportProcessor extends AbstractProcessor {
     }
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnvironment) {
-        super.init(processingEnvironment);
+    public synchronized void init(ProcessingEnvironment env) {
+        super.init(env);
 
-        elements = processingEnv.getElementUtils();
-        logger = new Logger(processingEnv.getMessager());
+        elements = env.getElementUtils();
+        logger = new Logger(env.getMessager());
         String mode = "";
-        Map<String, String> options = processingEnv.getOptions();
+        Map<String, String> options = env.getOptions();
         if (MapUtils.isNotEmpty(options)) {
             module = options.get(KEY_MODULE_NAME);
             mode = options.get(MODE);
@@ -87,7 +82,7 @@ public class ReportProcessor extends AbstractProcessor {
             module = "default";
         }
         _mode = Mode.customValueOf(mode);
-        filer = processingEnvironment.getFiler();
+        filer = env.getFiler();
 
         try {
             extensions =
@@ -164,7 +159,7 @@ public class ReportProcessor extends AbstractProcessor {
                     if (Mode.MODE_FILE.equals(_mode))
                         generateReport(result);
                     else
-                        generateExeReport(result);
+                        generateExtReportJavaFile(result);
                 }
             }
             return handleByAnyOne;
@@ -218,7 +213,7 @@ public class ReportProcessor extends AbstractProcessor {
         }
     }
 
-    private void generateExeReport(Result result) {
+    private void generateExtReportJavaFile(Result result) {
         String fileName = Utils.genFileName(module + result.getReportFileNamePrefix(), result.getFileExt());
         logger.info("generate " + fileName);
         Writeable writeable = Writeable.DirectionWriter.of(new File("./" + module + "/ext"));
@@ -227,6 +222,5 @@ public class ReportProcessor extends AbstractProcessor {
                 result.getReportContent(),
                 writeable);
         logger.info("generate success");
-
     }
 }
