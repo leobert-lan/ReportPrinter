@@ -16,7 +16,8 @@ android {
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [module: "sample",
-                mode:"mode_class"]
+                mode:"mode_class",
+                active_reporter:"on"]
             }
         }
     }

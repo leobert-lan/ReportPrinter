@@ -1,7 +1,7 @@
 apply plugin: 'java-library'
 
 def ARTIFACT_ID = 'report-anno-compiler'
-def VERSION_NAME = '1.1.0'
+def VERSION_NAME = '1.1.2'
 def GROUP_ID = 'osp.leobert.android'
 
 ext {
@@ -24,7 +24,7 @@ dependencies {
     api 'org.apache.commons:commons-lang3:3.4'
     api 'org.apache.commons:commons-collections4:4.1'
 //    api project(":ReportNotation")
-    api(group: 'osp.leobert.android', name: 'ReportNotation', version: '1.1.0', ext: 'jar', classifier: '')
+    api(group: 'osp.leobert.android', name: 'ReportNotation', version: '1.1.1', ext: 'jar', classifier: '')
 }
 
 sourceCompatibility = "1.7"

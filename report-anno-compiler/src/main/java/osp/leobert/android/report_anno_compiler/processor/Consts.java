@@ -10,9 +10,13 @@ package osp.leobert.android.report_anno_compiler.processor;
 /*public*/ interface Consts {
     String KEY_MODULE_NAME = "module";
     String MODE = "mode";
+    String ACTIVE = "active_reporter";
+    String CLZ_WRITER = "reporter_writer";
 
     String MODE_CLASS = "mode_class";
     String MODE_FILE = "mode_file";
+    String WRITER_FILER = "filer";
+    String WRITER_CUSTOM = "custom";
 
     String PREFIX_OF_LOGGER = "[Report-Print-Compiler]-- ";
 }

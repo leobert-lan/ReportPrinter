@@ -31,6 +31,8 @@ import osp.leobert.android.reportprinter.spi.Model;
 import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
 
+import static osp.leobert.android.report_anno_compiler.processor.Consts.ACTIVE;
+import static osp.leobert.android.report_anno_compiler.processor.Consts.CLZ_WRITER;
 import static osp.leobert.android.report_anno_compiler.processor.Consts.KEY_MODULE_NAME;
 import static osp.leobert.android.report_anno_compiler.processor.Consts.MODE;
 
@@ -42,7 +44,7 @@ import static osp.leobert.android.report_anno_compiler.processor.Consts.MODE;
  * Created by leobert on 2018/11/17.
  */
 @AutoService(Processor.class)
-@SupportedOptions({KEY_MODULE_NAME, MODE})
+@SupportedOptions({KEY_MODULE_NAME, MODE, ACTIVE, CLZ_WRITER})
 public class ReportProcessor extends AbstractProcessor {
 
     private Set<ReporterExtension> extensions;
@@ -53,6 +55,8 @@ public class ReportProcessor extends AbstractProcessor {
     private Elements elements;
     private String module;
     private Mode _mode;
+    private State _state;
+    private WriterType _writerType;
 
     private Filer filer;
 
@@ -72,16 +76,24 @@ public class ReportProcessor extends AbstractProcessor {
         elements = env.getElementUtils();
         logger = new Logger(env.getMessager());
         String mode = "";
+        String state = "";
+        String writerType = "";
         Map<String, String> options = env.getOptions();
         if (MapUtils.isNotEmpty(options)) {
             module = options.get(KEY_MODULE_NAME);
             mode = options.get(MODE);
-            logger.info(">>> module is " + module + "  mode is:" + mode + " <<<");
+            state = options.get(ACTIVE);
+            writerType = options.get(CLZ_WRITER);
+            logger.info(">>> module is " + module + "  mode is:" + mode +
+                    "  state is:" + state + "  writerType is:" + writerType +
+                    " <<<");
         }
         if (module == null || module.equals("")) {
             module = "default";
         }
         _mode = Mode.customValueOf(mode);
+        _state = State.customValueOf(state);
+        _writerType = WriterType.customValueOf(writerType);
         filer = env.getFiler();
 
         try {
@@ -126,6 +138,19 @@ public class ReportProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
+        try {
+            internalProcess(set, roundEnvironment);
+        } catch (Exception e) {
+            logger.error(e);
+        }
+        return false;
+    }
+
+    private boolean internalProcess(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) throws Exception {
+        if (State.Off.equals(_state)) {
+            logger.warning(">>> reporter off");
+            return false;
+        }
         if (CollectionUtils.isNotEmpty(set)) {
             boolean handleByAnyOne = false;
             for (ReporterExtension ext : extensions) {
@@ -162,7 +187,7 @@ public class ReportProcessor extends AbstractProcessor {
                         generateExtReportJavaFile(result);
                 }
             }
-            return handleByAnyOne;
+//            return handleByAnyOne; change to always false
         }
         return false;
     }
@@ -216,11 +241,19 @@ public class ReportProcessor extends AbstractProcessor {
     private void generateExtReportJavaFile(Result result) {
         String fileName = Utils.genFileName(module + result.getReportFileNamePrefix(), result.getFileExt());
         logger.info("generate " + fileName);
-        Writeable writeable = Writeable.DirectionWriter.of(new File("./" + module + "/ext"));
+        Writeable writeable = getWriteable();
         Utils.generatePrinterClass(Utils.genReporterClzName(module + result.getReportFileNamePrefix()),
                 fileName,
                 result.getReportContent(),
                 writeable);
         logger.info("generate success");
+    }
+
+    private Writeable getWriteable() {
+        if (WriterType.Custom.equals(_writerType)) {
+            return Writeable.DirectionWriter.of(new File("./" + module + "/ext"));
+        } else {
+            return Writeable.FilerWriter.of(filer);
+        }
     }
 }
