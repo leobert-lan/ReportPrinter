@@ -3,6 +3,9 @@ apply plugin: 'java-library'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(":ReportNotation")
+
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc3'
+    implementation 'com.google.auto.service:auto-service:1.0-rc3'
 }
 
 sourceCompatibility = "7"

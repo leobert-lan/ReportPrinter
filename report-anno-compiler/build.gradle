@@ -17,6 +17,7 @@ ext {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    annotationProcessor 'com.google.auto.service:auto-service:1.0-rc3'
     api 'com.google.auto.service:auto-service:1.0-rc3'
     api 'com.squareup:javapoet:1.9.0'
 
