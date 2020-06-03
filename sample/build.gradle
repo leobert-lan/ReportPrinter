@@ -1,22 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-
-
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "osp.leobert.android.reportsample"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [module: "sample",
-                mode:"mode_class",
+                mode:"mode_file",
                 active_reporter:"on"]
             }
         }
@@ -42,14 +40,19 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+//    implementation project(path: ':utils_reporter')
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     //    api "osp.leobert.android:ReportNotation:1.0.0"
     api project(':ReportNotation')
     //    annotationProcessor "osp.leobert.android:report-anno-compiler:1.0.0"
-    annotationProcessor project(':report-anno-compiler')
     implementation project(':DemoReporterExt')
+
+    annotationProcessor project(':report-anno-compiler')
     annotationProcessor project(":DemoReporterExt")
+
+    implementation project(':utils_reporter')
+    annotationProcessor project(":utils_reporter")
 }

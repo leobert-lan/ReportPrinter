@@ -1,1 +1,1 @@
-include  ':ReportNotation', ':report-anno-compiler', ':sample', ':DemoReporterExt'
+include  ':ReportNotation', ':report-anno-compiler', ':sample', ':DemoReporterExt',':utils_reporter'

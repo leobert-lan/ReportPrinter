@@ -4,7 +4,7 @@ buildscript {
     ext.versions = [
             'minSdk'        : 14,
             'targetSdk'     : 21,
-            'compileSdk'    : 27,
+            'compileSdk'    : 28,
             'kotlin'        : '1.2.30',
             'supportLibrary': '27.0.2',
             'androidPlugin' : '2.3.1',
@@ -27,7 +27,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath deps.publish.jcenter
         classpath deps.publish.maven
         
