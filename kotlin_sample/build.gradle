@@ -50,4 +50,45 @@ dependencies {
     api project(':utils_reporter')
     kapt project(":utils_reporter")
 
+    //如果遇到：
+    //    A failure occurred while executing org.jetbrains.kotlin.gradle.internal.KaptExecution
+    //            > java.lang.reflect.InvocationTargetException (no error message)
+    //这是一些特定版本的gradle需要将annotationProcessor的依赖也要声明
+    // 添加依赖：
+    // project.dependencies.add("kapt", 'org.apache.commons:commons-lang3:3.4')
+    // project.dependencies.add("kapt", 'org.apache.commons:commons-collections4:4.1')
+    // 目前compiler使用了，具体视版本而定：
+//    api 'org.apache.commons:commons-lang3:3.4'
+//    api 'org.apache.commons:commons-collections4:4.1'
+//    api(group: 'osp.leobert.android', name: 'ReportNotation', version: '1.1.1', ext: 'jar', classifier: '')
+    //
+
 }
+
+//javaPreCompileDebug
+//compileDebugJavaWithJavac
+//并不适合通过任务去处理
+//project.afterEvaluate {
+//    def dependenciesTask = project.tasks.findByName("dependencies")
+//
+//    def addPrinterAptTask = project.tasks.create("AddPrinterAptTask", AddPrinterAptTask.class)
+//    dependenciesTask.shouldRunAfter(addPrinterAptTask)
+//
+//    def compileDebugJavaWithJavacTask = project.tasks.findByName("compileDebugJavaWithJavac")
+//    addPrinterAptTask.finalizedBy(compileDebugJavaWithJavacTask)
+////    addPrinterAptTask.finalizedBy(addPrinterAptTask);
+//}
+//
+//class AddPrinterAptTask extends DefaultTask {
+//    @TaskAction
+//    void doTask() {
+////        project.dependencies.add("kapt", project(':report-anno-compiler'))
+////        project.dependencies.add("kapt", project(":DemoReporterExt"))
+////
+////        project.dependencies.add("kapt", project(":utils_reporter"))
+//
+//        project.dependencies.add("kapt", 'org.apache.commons:commons-lang3:3.4')
+//        project.dependencies.add("kapt", 'org.apache.commons:commons-collections4:4.1')
+//        println("add printer kapt deps finish")
+//    }
+//}
