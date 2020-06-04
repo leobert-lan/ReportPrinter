@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "osp.leobert.android.reportsample"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -55,4 +55,6 @@ dependencies {
 
     implementation project(':utils_reporter')
     annotationProcessor project(":utils_reporter")
+    //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
+    api project(':kotlin_sample')
 }
