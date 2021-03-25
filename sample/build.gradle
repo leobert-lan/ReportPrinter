@@ -1,18 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-
-
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "osp.leobert.android.reportsample"
-        minSdkVersion 26
-        targetSdkVersion 27
+        minSdkVersion 21
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         javaCompileOptions {
             annotationProcessorOptions {
                 arguments = [module: "sample",
@@ -42,16 +40,23 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+//    implementation project(path: ':utils_reporter')
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
     //    api "osp.leobert.android:ReportNotation:1.0.0"
     api project(':ReportNotation')
     //    annotationProcessor "osp.leobert.android:report-anno-compiler:1.0.0"
-    annotationProcessor project(':report-anno-compiler')
     implementation project(':DemoReporterExt')
+
+    annotationProcessor project(':report-anno-compiler')
     annotationProcessor project(":DemoReporterExt")
+
+    implementation project(':utils_reporter')
+    annotationProcessor project(":utils_reporter")
+    //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
+    api project(':kotlin_sample')
 }
 
 task wrapper4_4(type: Wrapper) {
