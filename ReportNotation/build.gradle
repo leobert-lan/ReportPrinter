@@ -1,7 +1,7 @@
 apply plugin: 'java-library'
 
 def ARTIFACT_ID = 'ReportNotation'
-def VERSION_NAME = '1.1.1'
+def VERSION_NAME = '1.1.2'
 def GROUP_ID = 'osp.leobert.android'
 
 ext {
@@ -17,7 +17,8 @@ ext {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'com.google.auto.service:auto-service:1.0-rc3'
+    api 'com.google.auto.service:auto-service:1.0-rc4'
+    api "com.uber.javaxextras:javax-extras:0.1.0"
 }
 
 sourceCompatibility = "1.7"
