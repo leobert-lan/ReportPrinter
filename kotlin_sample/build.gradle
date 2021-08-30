@@ -12,11 +12,11 @@ kapt {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 31
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -35,60 +35,17 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.3.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.3.0'
 
-    api project(':ReportNotation')
+//    api project(':ReportNotation')
+    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
+    api project(':utils_reporter')
     implementation project(':DemoReporterExt')
 
-    kapt project(':report-anno-compiler')
+//    kapt project(':report-anno-compiler')
+    kapt "io.github.leobert-lan:report-anno-compiler:1.1.3"
+    kapt project(":utils_reporter")
     kapt project(":DemoReporterExt")
 
-    api project(':utils_reporter')
-    kapt project(":utils_reporter")
-
-    //如果遇到：
-    //    A failure occurred while executing org.jetbrains.kotlin.gradle.internal.KaptExecution
-    //            > java.lang.reflect.InvocationTargetException (no error message)
-    //这是一些特定版本的gradle需要将annotationProcessor的依赖也要声明
-    // 添加依赖：
-    // project.dependencies.add("kapt", 'org.apache.commons:commons-lang3:3.4')
-    // project.dependencies.add("kapt", 'org.apache.commons:commons-collections4:4.1')
-    // 目前compiler使用了，具体视版本而定：
-//    api 'org.apache.commons:commons-lang3:3.4'
-//    api 'org.apache.commons:commons-collections4:4.1'
-//    api(group: 'osp.leobert.android', name: 'ReportNotation', version: '1.1.1', ext: 'jar', classifier: '')
-    //
-
 }
-
-//javaPreCompileDebug
-//compileDebugJavaWithJavac
-//并不适合通过任务去处理
-//project.afterEvaluate {
-//    def dependenciesTask = project.tasks.findByName("dependencies")
-//
-//    def addPrinterAptTask = project.tasks.create("AddPrinterAptTask", AddPrinterAptTask.class)
-//    dependenciesTask.shouldRunAfter(addPrinterAptTask)
-//
-//    def compileDebugJavaWithJavacTask = project.tasks.findByName("compileDebugJavaWithJavac")
-//    addPrinterAptTask.finalizedBy(compileDebugJavaWithJavacTask)
-////    addPrinterAptTask.finalizedBy(addPrinterAptTask);
-//}
-//
-//class AddPrinterAptTask extends DefaultTask {
-//    @TaskAction
-//    void doTask() {
-////        project.dependencies.add("kapt", project(':report-anno-compiler'))
-////        project.dependencies.add("kapt", project(":DemoReporterExt"))
-////
-////        project.dependencies.add("kapt", project(":utils_reporter"))
-//
-//        project.dependencies.add("kapt", 'org.apache.commons:commons-lang3:3.4')
-//        project.dependencies.add("kapt", 'org.apache.commons:commons-collections4:4.1')
-//        println("add printer kapt deps finish")
-//    }
-//}

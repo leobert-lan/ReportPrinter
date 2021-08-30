@@ -1,28 +1,44 @@
 apply plugin: 'java-library'
+apply plugin: 'osp.leobert.maven.publish'
 
-def ARTIFACT_ID = 'ReportNotation'
-def VERSION_NAME = '1.1.2'
-def GROUP_ID = 'osp.leobert.android'
-
-ext {
-    bintrayName = ARTIFACT_ID
-    artifact = ARTIFACT_ID
-    libraryName = ARTIFACT_ID
-    libraryDescription = 'annotation for report'
-    libraryVersion = VERSION_NAME
-    licenseName = 'MIT'
-    licenseUrl = 'https://opensource.org/licenses/mit-license.html'
-    allLicenses = ["MIT"]
-}
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'com.google.auto.service:auto-service:1.0-rc4'
-    api "com.uber.javaxextras:javax-extras:0.1.0"
+//    implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    api 'com.google.auto.service:auto-service:1.0-rc4'
+//    api "com.uber.javaxextras:javax-extras:0.1.0"
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
-apply from: '../installv1.gradle'
-apply from: '../bintrayv1.gradle'
+
+EasyPublish {
+    sourceSet = sourceSets.main.java.srcDirs
+//    //    notStandardJavaComponent = false
+//
+//    docExcludes = arrayListOf("osp/leobert/android/davinci/*")
+//
+    artifact {
+        value = "build/libs/ReportNotation.jar"
+    }
+
+    description = "annotation to generate report"
+
+    developer {
+        id = "leobert"
+        name = "leobert"
+        email = "leobert.l@hotmail.com"
+    }
+
+    groupId = "io.github.leobert-lan"
+    artifactId = "ReportNotation"
+    version = "1.1.3"
+    packaging = "jar"
+    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
+    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
+    licenseName = "MIT"
+    licenseUrl = "https://opensource.org/licenses/mit-license.html"
+            //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
+
+    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+}

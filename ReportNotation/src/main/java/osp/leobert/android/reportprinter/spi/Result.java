@@ -8,10 +8,10 @@ package osp.leobert.android.reportprinter.spi;
  * Created by leobert on 2018/11/17.
  */
 public class Result {
-    private boolean handled;
-    private String reportContent;
-    private String reportFileNamePrefix;
-    private String fileExt;
+    private final boolean handled;
+    private final String reportContent;
+    private final String reportFileNamePrefix;
+    private final String fileExt;
 
     public boolean isHandled() {
         return handled;

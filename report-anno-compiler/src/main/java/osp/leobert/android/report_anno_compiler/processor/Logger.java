@@ -3,14 +3,12 @@ package osp.leobert.android.report_anno_compiler.processor;
 import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 
-import osp.leobert.android.report_anno_compiler.processor.Consts;
-
 
 /**
  * Created by leobert on 2017/9/18.
  */
 public class Logger {
-    private Messager msg;
+    private final Messager msg;
 
     public Logger(Messager messager) {
         msg = messager;
@@ -21,7 +19,7 @@ public class Logger {
      */
     public void info(CharSequence info) {
         if (isNotEmpty(info)) {
-            msg.printMessage(Diagnostic.Kind.NOTE, Consts.PREFIX_OF_LOGGER + info);
+            msg.printMessage(Diagnostic.Kind.WARNING, Consts.PREFIX_OF_LOGGER + "[INFO] " + info);
         }
     }
 
@@ -51,9 +49,9 @@ public class Logger {
         }
         return sb.toString();
     }
-    
-    private  static  boolean isNotEmpty(final CharSequence cs) {
-        boolean isEmpty =  cs == null || cs.length() == 0;
+
+    private static boolean isNotEmpty(final CharSequence cs) {
+        boolean isEmpty = cs == null || cs.length() == 0;
         return !isEmpty;
     }
 }

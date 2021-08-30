@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "osp.leobert.android.reportsample"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
 
@@ -28,8 +28,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     sourceSets {
         test {
@@ -40,31 +40,29 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-//    implementation project(path: ':utils_reporter')
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-    //    api "osp.leobert.android:ReportNotation:1.0.0"
-    api project(':ReportNotation')
-    //    annotationProcessor "osp.leobert.android:report-anno-compiler:1.0.0"
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+
+//    api project(':ReportNotation')
+    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
     implementation project(':DemoReporterExt')
-
-    annotationProcessor project(':report-anno-compiler')
-    annotationProcessor project(":DemoReporterExt")
-
     implementation project(':utils_reporter')
+
+//    annotationProcessor project(':report-anno-compiler')
+    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.3"
+
+    annotationProcessor project(":DemoReporterExt")
     annotationProcessor project(":utils_reporter")
+
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':kotlin_sample')
 }
-
-task wrapper4_4(type: Wrapper) {
-    gradleVersion = '4.4'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
-task wrapper5_1_1(type: Wrapper) {
-    gradleVersion = '5.1.1'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
+//
+//task wrapper4_4(type: Wrapper) {
+//    gradleVersion = '4.4'
+//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//}
+//
+//task wrapper5_1_1(type: Wrapper) {
+//    gradleVersion = '5.1.1'
+//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//}

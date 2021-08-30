@@ -1,15 +1,13 @@
 package osp.leobert.android.report_anno_compiler.processor;
 
-import com.google.auto.service.AutoService;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
+import com.google.auto.service.AutoService;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceConfigurationError;
@@ -79,7 +77,7 @@ public class ReportProcessor extends AbstractProcessor {
         String state = "";
         String writerType = "";
         Map<String, String> options = env.getOptions();
-        if (MapUtils.isNotEmpty(options)) {
+        if (options != null && !options.isEmpty())  {
             module = options.get(KEY_MODULE_NAME);
             mode = options.get(MODE);
             state = options.get(ACTIVE);
@@ -97,8 +95,10 @@ public class ReportProcessor extends AbstractProcessor {
         filer = env.getFiler();
 
         try {
-            extensions =
-                    ImmutableSet.copyOf(ServiceLoader.load(ReporterExtension.class, loaderForExtensions));
+            extensions = new LinkedHashSet<>();
+            for (ReporterExtension reporterExtension : ServiceLoader.load(ReporterExtension.class, loaderForExtensions)) {
+                extensions.add(reporterExtension);
+            }
 
             StringBuilder tmp = new StringBuilder();
             for (ReporterExtension ext : extensions) {
@@ -117,7 +117,7 @@ public class ReportProcessor extends AbstractProcessor {
             warning.append(" Exception: ")
                     .append(t);
             logger.warning(warning.toString());
-            extensions = ImmutableSet.of();
+            extensions = Collections.emptySet();
         }
     }
 
@@ -128,7 +128,7 @@ public class ReportProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set<String> supportedAnnotations = Sets.newLinkedHashSet();
+        Set<String> supportedAnnotations = new LinkedHashSet<>();
         for (ReporterExtension ext : extensions) {
             supportedAnnotations.addAll(ext.applicableAnnotations());
         }
@@ -139,7 +139,8 @@ public class ReportProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         try {
-            internalProcess(set, roundEnvironment);
+            boolean result = internalProcess(set, roundEnvironment);
+            logger.info("process result: " + result);
         } catch (Exception e) {
             logger.error(e);
         }
@@ -151,7 +152,7 @@ public class ReportProcessor extends AbstractProcessor {
             logger.warning(">>> reporter off");
             return false;
         }
-        if (CollectionUtils.isNotEmpty(set)) {
+        if (set != null && set.size() > 0) {
             boolean handleByAnyOne = false;
             for (ReporterExtension ext : extensions) {
                 Set<String> targetAnnotations = ext.applicableAnnotations();

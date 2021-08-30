@@ -16,7 +16,7 @@ import javax.lang.model.element.Modifier;
  * <p><b>Package:</b> osp.leobert.android.issueprint.utils </p>
  * <p><b>Project:</b> IssuePrinter </p>
  * <p><b>Classname:</b> Utils </p>
- * <p><b>Description:</b> TODO </p>
+ * <p><b>Description:</b> Utils </p>
  * Created by leobert on 13/04/2018.
  */
 /*public*/ class Utils {
