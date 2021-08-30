@@ -19,7 +19,6 @@
 
 ```
 dependencies {
-//    implementation project(":ReportNotation")
     implementation "io.github.leobert-lan:ReportNotation:1.1.3"
 
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
@@ -131,11 +130,11 @@ dependencies {
 配置：
 
 * module：文件前缀，一般和Module对应即可
-* mode：输出形式， 取值范围：["mode_class" | "mode_file"]，
+* mode：输出形式， 取值范围：
     * mode_file 以实际内容输出
-    * mode_class 目前不建议使用，是一个尚未成熟的设计
+    * ~~mode_class 目前不建议使用，是一个尚未成熟的设计~~
 * active_reporter on|off ,是否输出
-* reporter_writer 同样不建议使用，配合 "model为mode_class" 时输出到特定目录作为源码编译的
+* ~~reporter_writer 同样不建议使用，配合 "model为mode_class" 时输出到特定目录作为源码编译的~~
 
 以此为例：
 
@@ -166,3 +165,4 @@ METHOD :osp.leobert.android.kotlin_sample.KtFoo#getI$annotations()
 foo:foo of demo notated at field
 ```
 
+当然，这还只是一个非常简单的例子，使用者可以在注解处理时、将内容编辑为MarkDown或者Html，甚至利用更加复杂的注解完成有趣的事情（例如：基于plantuml，生成流程图、类图）
