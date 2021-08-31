@@ -42,16 +42,16 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.3.0'
 
-//    api project(':ReportNotation')
-    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
     implementation project(':DemoReporterExt')
-    implementation project(':utils_reporter')
+//    implementation project(':utils_reporter')
+    implementation "io.github.leobert-lan:reporter-util:1.0.0"
 
 //    annotationProcessor project(':report-anno-compiler')
     annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.3"
 
     annotationProcessor project(":DemoReporterExt")
-    annotationProcessor project(":utils_reporter")
+//    annotationProcessor project(":utils_reporter")
+    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
 
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':kotlin_sample')

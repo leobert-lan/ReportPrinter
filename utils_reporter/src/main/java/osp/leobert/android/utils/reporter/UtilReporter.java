@@ -100,7 +100,7 @@ public class UtilReporter implements ReporterExtension {
             allGroupsListItems.add(new UnorderedListItem(group));
         }
         allGroupsList.setItems(allGroupsListItems);
-        docBuilder.append(allGroupsList).append("\r\n\r\n");
+        docBuilder.append(allGroupsList).append(RETURN).append(RETURN);
 
 
         //Each Util used in each group
