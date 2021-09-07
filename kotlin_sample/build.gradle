@@ -50,4 +50,7 @@ dependencies {
     kapt "io.github.leobert-lan:reporter-util:1.0.0"
     kapt project(":DemoReporterExt")
 
+    implementation project(':m_review_reporter')
+    kapt project(':m_review_reporter')
+
 }

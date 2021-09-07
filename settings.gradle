@@ -1,2 +1,3 @@
 include ':kotlin_sample'
 include  ':ReportNotation', ':report-anno-compiler', ':sample', ':DemoReporterExt',':utils_reporter'
+include ':m_review_reporter'

@@ -82,7 +82,7 @@ public class UtilReporter implements ReporterExtension {
             generateDocBlock(model, annotation);
         }
 
-        docBuilder.append(new Heading("Utils used in MotorFans")).append(END);
+        docBuilder.append(new Heading("Utils")).append(END);
 
 
         docBuilder.append(new BoldText(getDay())).append(END);
