@@ -62,7 +62,7 @@ public class UtilReporter implements ReporterExtension {
     }
 
     private final Map<String, List<Foo>> groupedByUsage = new LinkedHashMap<>();
-    private final List<String> viewHolderDocBlocks = new ArrayList<>();
+    private final List<String> docBlocks = new ArrayList<>();
     private final String END = "\n";
     private final String RETURN = "\r\n";
 
@@ -126,7 +126,7 @@ public class UtilReporter implements ReporterExtension {
 
         docBuilder.append(new Heading("Util Detail", 2)).append(END).append(RETURN);
 
-        for (String docBlock : viewHolderDocBlocks) {
+        for (String docBlock : docBlocks) {
             docBuilder.append(docBlock).append(RETURN);
         }
 
@@ -177,7 +177,7 @@ public class UtilReporter implements ReporterExtension {
 
         docBlockBuilder.append(RETURN);
 
-        viewHolderDocBlocks.add(docBlockBuilder.toString());
+        docBlocks.add(docBlockBuilder.toString());
     }
 
     private String getSimpleInfo(Model model, Util util) {
