@@ -32,19 +32,27 @@ class TODOReporter : ReporterExtension {
     }
 
     override fun applicableAnnotations(): MutableSet<String> {
-        return mutableSetOf(TODO::class.java.name)
+        return mutableSetOf(TODO::class.java.name, TODOs::class.java.name)
     }
 
     override fun generateReport(previousData: MutableMap<String, MutableList<Model>>?): Result {
         if (previousData == null) return Result.newBuilder().handled(false).build()
 
         val todoModels: List<Model>? = previousData[TODO::class.java.name]
-        if (todoModels == null || todoModels.isEmpty()) return Result.newBuilder().handled(false).build()
+        val todosModels: List<Model>? = previousData[TODOs::class.java.name]
+        if (todoModels.isNullOrEmpty() && todosModels.isNullOrEmpty()) return Result.newBuilder().handled(false).build()
         val docBuilder = StringBuilder()
 
-        todoModels.forEach { model ->
+        todoModels?.forEach { model ->
             val annotation: TODO = model.element.getAnnotation(TODO::class.java)
             groupBy(model, annotation)
+        }
+
+        todosModels?.forEach { model ->
+            val annotation: TODOs = model.element.getAnnotation(TODOs::class.java)
+            annotation.todos.forEach {
+                groupBy(model, it)
+            }
         }
 
         docBuilder.append(Heading("TODO-List")).append(END).append(RETURN)

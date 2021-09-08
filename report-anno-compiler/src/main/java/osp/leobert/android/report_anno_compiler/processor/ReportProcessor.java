@@ -77,7 +77,7 @@ public class ReportProcessor extends AbstractProcessor {
         String state = "";
         String writerType = "";
         Map<String, String> options = env.getOptions();
-        if (options != null && !options.isEmpty())  {
+        if (options != null && !options.isEmpty()) {
             module = options.get(KEY_MODULE_NAME);
             mode = options.get(MODE);
             state = options.get(ACTIVE);
@@ -163,6 +163,7 @@ public class ReportProcessor extends AbstractProcessor {
 
                     TypeElement annoType = elements.getTypeElement(anno);
                     Set<? extends Element> hitElements = roundEnvironment.getElementsAnnotatedWith(annoType);
+                    logger.info("find " + hitElements.size() + " elements notated by " + anno);
 
                     for (Element element : hitElements) {
                         Model model = Model.newBuilder()

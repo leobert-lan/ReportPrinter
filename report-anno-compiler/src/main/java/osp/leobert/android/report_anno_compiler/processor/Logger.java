@@ -25,13 +25,13 @@ public class Logger {
 
     public void error(CharSequence error) {
         if (isNotEmpty(error)) {
-            msg.printMessage(Diagnostic.Kind.ERROR, Consts.PREFIX_OF_LOGGER + "An exception is encountered, [" + error + "]");
+            msg.printMessage(Diagnostic.Kind.WARNING, Consts.PREFIX_OF_LOGGER + "[ERROR] An exception is encountered, [" + error + "]");
         }
     }
 
     public void error(Throwable error) {
         if (null != error) {
-            msg.printMessage(Diagnostic.Kind.ERROR, Consts.PREFIX_OF_LOGGER + "An exception is encountered, [" + error.getMessage() + "]" + "\n" + formatStackTrace(error.getStackTrace()));
+            msg.printMessage(Diagnostic.Kind.WARNING, Consts.PREFIX_OF_LOGGER + "[ERROR] An exception is encountered, [" + error.getMessage() + "]" + "\n" + formatStackTrace(error.getStackTrace()));
         }
     }
 

@@ -32,19 +32,29 @@ class BugReporter : ReporterExtension {
     }
 
     override fun applicableAnnotations(): MutableSet<String> {
-        return mutableSetOf(Bug::class.java.name)
+        return mutableSetOf(Bug::class.java.name, Bugs::class.java.name)
     }
 
     override fun generateReport(previousData: MutableMap<String, MutableList<Model>>?): Result {
         if (previousData == null) return Result.newBuilder().handled(false).build()
 
-        val doneModels: List<Model>? = previousData[Bug::class.java.name]
-        if (doneModels == null || doneModels.isEmpty()) return Result.newBuilder().handled(false).build()
+        val bugModels: List<Model>? = previousData[Bug::class.java.name]
+        val bugsModels: List<Model>? = previousData[Bugs::class.java.name]
+        if (bugModels.isNullOrEmpty() && bugsModels.isNullOrEmpty()) return Result.newBuilder().handled(false).build()
         val docBuilder = StringBuilder()
 
-        doneModels.forEach { model ->
-            val annotation: Bug = model.element.getAnnotation(Bug::class.java)
-            groupBy(model, annotation)
+        bugModels?.forEach { model ->
+            model.element.getAnnotationsByType(Bug::class.java).forEach { annotation ->
+                groupBy(model, annotation)
+            }
+        }
+
+        bugsModels?.forEach { model ->
+            model.element.getAnnotationsByType(Bugs::class.java).forEach { bugs ->
+                bugs.bugs.forEach { bug ->
+                    groupBy(model, bug)
+                }
+            }
         }
 
         docBuilder.append(Heading("Bug-List")).append(END).append(RETURN)

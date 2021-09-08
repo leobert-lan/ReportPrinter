@@ -32,19 +32,27 @@ class DoneReporter : ReporterExtension {
     }
 
     override fun applicableAnnotations(): MutableSet<String> {
-        return mutableSetOf(Done::class.java.name)
+        return mutableSetOf(Done::class.java.name, Dones::class.java.name)
     }
 
     override fun generateReport(previousData: MutableMap<String, MutableList<Model>>?): Result {
         if (previousData == null) return Result.newBuilder().handled(false).build()
 
         val doneModels: List<Model>? = previousData[Done::class.java.name]
-        if (doneModels == null || doneModels.isEmpty()) return Result.newBuilder().handled(false).build()
+        val donesModels: List<Model>? = previousData[Dones::class.java.name]
+        if (doneModels.isNullOrEmpty() && donesModels.isNullOrEmpty()) return Result.newBuilder().handled(false).build()
         val docBuilder = StringBuilder()
 
-        doneModels.forEach { model ->
+        doneModels?.forEach { model ->
             val annotation: Done = model.element.getAnnotation(Done::class.java)
             groupBy(model, annotation)
+        }
+
+        donesModels?.forEach { model ->
+            val annotation: Dones = model.element.getAnnotation(Dones::class.java)
+            annotation.dones.forEach {
+                groupBy(model, it)
+            }
         }
 
         docBuilder.append(Heading("Done-List")).append(END).append(RETURN)

@@ -12,11 +12,11 @@ kapt {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -44,8 +44,8 @@ dependencies {
     api "io.github.leobert-lan:reporter-util:1.0.0"
     implementation project(':DemoReporterExt')
 
-//    kapt project(':report-anno-compiler')
-    kapt "io.github.leobert-lan:report-anno-compiler:1.1.3"
+    kapt project(':report-anno-compiler')
+//    kapt "io.github.leobert-lan:report-anno-compiler:1.1.3"
 //    kapt project(":utils_reporter")
     kapt "io.github.leobert-lan:reporter-util:1.0.0"
     kapt project(":DemoReporterExt")
