@@ -24,10 +24,14 @@ package osp.leobert.android.reporter.review
 //@Repeatable
 annotation class Bug(
     val desc: String,
+    val state: State = State.Active,
     val module: String = "",
     val track: String = ""
 )
 
+enum class State(val done:Boolean) {
+    Active(false), Done(true)
+}
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(

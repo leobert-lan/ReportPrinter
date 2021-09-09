@@ -21,7 +21,7 @@ class BugReporter : ReporterExtension {
 
     private class Pack(val model: Model, val notation: Bug)
 
-    private val groupedByDate: MutableMap<String, MutableList<Pack>> = LinkedHashMap<String, MutableList<Pack>>()
+    private val groupedByModule: MutableMap<String, MutableList<Pack>> = LinkedHashMap<String, MutableList<Pack>>()
     private val END = "\n"
     private val RETURN = "\r\n"
 
@@ -62,12 +62,14 @@ class BugReporter : ReporterExtension {
 
         docBuilder.append(BoldText("generated at ${getDay()}")).append(END).append(RETURN)
 
-        groupedByDate.forEach { (k, v) ->
+        groupedByModule.forEach { (k, v) ->
             // 时间
             docBuilder.append(Heading(k.takeIf { it.isNotEmpty() } ?: "Undefined Module", 2)).append(END).append(RETURN)
-            v.forEach { pack ->
+            v.sortedBy {
+                it.notation.state
+            }.forEach { pack ->
 
-                docBuilder.append(TaskListItem(pack.notation.desc, false)).append(RETURN)
+                docBuilder.append(TaskListItem(pack.notation.desc, pack.notation.state.done)).append(RETURN)
 
                 docBuilder.append(CodeBlock("ref: " + pack.model.name)).append(END).append(RETURN)
 
@@ -91,12 +93,12 @@ class BugReporter : ReporterExtension {
 
     private fun groupBy(model: Model, notation: Bug) {
         val groupKey: String = notation.module
-        if (groupedByDate.containsKey(groupKey)) {
-            groupedByDate[groupKey]?.add(Pack(model, notation))
+        if (groupedByModule.containsKey(groupKey)) {
+            groupedByModule[groupKey]?.add(Pack(model, notation))
         } else {
             val list: MutableList<Pack> = ArrayList<Pack>()
             list.add(Pack(model, notation))
-            groupedByDate[groupKey] = list
+            groupedByModule[groupKey] = list
         }
     }
 
