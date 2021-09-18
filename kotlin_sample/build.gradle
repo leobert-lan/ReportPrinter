@@ -53,4 +53,7 @@ dependencies {
     implementation project(':m_review_reporter')
     kapt project(':m_review_reporter')
 
+    implementation project(":m_diagram_uml")
+    kapt project(":m_diagram_uml")
+
 }
