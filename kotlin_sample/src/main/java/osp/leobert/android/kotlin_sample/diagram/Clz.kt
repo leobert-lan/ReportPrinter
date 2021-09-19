@@ -1,6 +1,6 @@
 package osp.leobert.android.kotlin_sample.diagram
 
-import osp.leobert.android.reporter.diagram.notation.Diagram
+import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 
 /**
  * <p><b>Package:</b> osp.leobert.android.kotlin_sample.diagram </p>
@@ -10,25 +10,25 @@ import osp.leobert.android.reporter.diagram.notation.Diagram
  * Created by leobert on 2021/9/18.
  */
 
-@Diagram("AAA")
+@ClassDiagram("AAA")
 annotation class DemoDiagram
 
-@Diagram
+@ClassDiagram
 @DemoDiagram
-class Clz {
+class Clz : SealedI {
 }
 
-@Diagram("AAA")
+@ClassDiagram("AAA")
 enum class Enum {}
 
-@Diagram("AAA")
+@ClassDiagram("AAA")
 interface InterFace {
 }
 
-@Diagram("AAA")
-sealed interface SealedInterface {}
+@ClassDiagram("AAA")
+sealed interface SealedI : InterFace {}
 
 
-@Diagram("AAAB")
+@ClassDiagram("AAAB")
 sealed class SealedClz
 

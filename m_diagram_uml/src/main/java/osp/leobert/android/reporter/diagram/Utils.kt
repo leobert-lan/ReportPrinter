@@ -1,7 +1,10 @@
 package osp.leobert.android.reporter.diagram
 
-import osp.leobert.android.reporter.diagram.notation.Diagram
+import com.google.auto.common.MoreTypes
+import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
+import javax.lang.model.element.TypeElement
+import javax.lang.model.type.TypeMirror
 
 /**
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram </p>
@@ -12,12 +15,28 @@ import javax.lang.model.element.Element
  */
 object Utils {
 
-    fun preferedQulifier(notatedNotation: Element?, notation: Diagram): String {
+    fun preferedQulifier(notatedNotation: Element?, notation: ClassDiagram): String {
         return notation.qualifier
     }
 
     inline fun <reified R> Any?.takeIfInstance(): R? {
         if (this is R) return this
         return null
+    }
+
+    fun TypeMirror.ifElement(): Element? {
+        return try {
+            MoreTypes.asElement(this)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun shouldIgnoreEmlElement(element: Element, diagram: ClassDiagram): Boolean {
+        if (element !is TypeElement) return true
+        if (element.qualifiedName.toString() == "java.lang.Object") return true
+
+//        todo diagram config parse
+        return false
     }
 }
