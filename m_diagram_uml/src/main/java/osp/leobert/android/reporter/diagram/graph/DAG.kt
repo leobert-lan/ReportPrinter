@@ -37,7 +37,7 @@ class DAG<T>(val nameOf: (T) -> String, val printChunkMax: Int) {
         }
 
         inDegreeCache[edge.to] = (inDegreeCache[edge.to] ?: 0).plus(edge.weight)
-        inDegreeCache[edge.from] = inDegreeCache[edge.from]?:0
+        inDegreeCache[edge.from] = inDegreeCache[edge.from] ?: 0
 
         edgesByEnd[edge.to]?.put(edge.from, edge.weight)
     }
@@ -121,6 +121,10 @@ class DAG<T>(val nameOf: (T) -> String, val printChunkMax: Int) {
             info.append("\n")
         }
         return info.toString()
+    }
+
+    fun getWeight(first: T, second: T): Int {
+        return edgesByStart[first]?.get(second) ?: 0
     }
 }
 //

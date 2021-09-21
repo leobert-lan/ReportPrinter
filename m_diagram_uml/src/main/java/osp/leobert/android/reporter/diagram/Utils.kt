@@ -39,4 +39,16 @@ object Utils {
 //        todo diagram config parse
         return false
     }
+
+    inline fun <T> List<T>.forEachWindowSize2(consumer: (first: T, second: T) -> Unit) {
+        if (this.size < 2) return
+        var index = 0
+
+        while (index + 1 < this.size) {
+            val first = this[index]
+            val second = this[index + 1]
+            consumer(first, second)
+            index++
+        }
+    }
 }

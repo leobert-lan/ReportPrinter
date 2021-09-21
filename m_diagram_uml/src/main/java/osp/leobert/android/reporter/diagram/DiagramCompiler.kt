@@ -3,6 +3,7 @@ package osp.leobert.android.reporter.diagram
 import androidx.annotation.RequiresApi
 import com.google.auto.service.AutoService
 import osp.leobert.android.maat.dag.DAG
+import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
 import osp.leobert.android.reporter.diagram.core.Relation
@@ -15,15 +16,17 @@ import osp.leobert.android.reportprinter.spi.Result
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
-import javax.lang.model.element.TypeElement
 
 @AutoService(ReporterExtension::class)
 /*skip lint warning!*/
 @RequiresApi(24)
 class DiagramCompiler : ReporterExtension {
 
+    val RETURN = "\r\n"
+
     private val groups = mutableMapOf<String, MutableList<Pair<ClassDiagram, Model>>>()
     private val diagramGraphByGroup = mutableMapOf<String, DAG<UmlElement>>()
+    private val diagramUmlElementCache = mutableMapOf<String, MutableSet<UmlElement>>()
 
     override fun applicableAnnotations(): MutableSet<String> {
         return mutableSetOf(ClassDiagram::class.java.name)
@@ -41,6 +44,7 @@ class DiagramCompiler : ReporterExtension {
 
         groups.clear()
         diagramGraphByGroup.clear()
+        diagramUmlElementCache.clear()
 
         val sb = StringBuilder()
 
@@ -48,49 +52,100 @@ class DiagramCompiler : ReporterExtension {
             handleGroup(it, candidates)
         }
 
-        groups.forEach { (t: String, u: MutableList<Pair<ClassDiagram, Model>>) ->
+        //todo consider alias
+        val nameGetter = { element: UmlElement ->
+            element.name
+        }
 
-            val graph = diagramGraphByGroup.getOrDefault(
-                t, DAG(
-                    nameOf = { it.name }, printChunkMax = 10
-                )
-            )
+        groups.forEach { (qualifierName: String, u: MutableList<Pair<ClassDiagram, Model>>) ->
 
-            diagramGraphByGroup[t] = graph
+            val graph = diagramGraphByGroup.getOrPut(qualifierName, {
+                DAG(nameOf = { it.name }, printChunkMax = 10)
+            })
+
+            val cache = diagramUmlElementCache.getOrPut(qualifierName, {
+                LinkedHashSet()
+            })
+
 
             u.forEach {
-                handleUmlElement(it.second, it.first, graph)
+                handleUmlElement(it.second, it.first, graph, cache)
             }
 
-            sb.append(t).append(" --> \r\n")
-                .append(
-                    graph.debugMatrix()
-                ).append("\r\n")
+            sb.append("@startuml").append(RETURN)
+            sb.append("'").append(qualifierName).append(RETURN)
 
+            // draw all uml-element
+            cache.forEach {
+                sb.append(it.umlElement()).append(RETURN)
+            }
 
-            sb.append(t).append(" --> ")
-                .append("[")
-                .append(
-                    u.map {
-                        it.second.element.takeIfInstance<TypeElement>()?.qualifiedName?.toString()
-                    }.joinToString(",\r\n")
-                ).append("]\r\n")
+//            //todo debug info
+//            sb.append("'").append(qualifierName).append(" --> ").append(RETURN)
+//                    .append(
+//                            graph.debugMatrix().replace("\r\n", "\r\n'")
+//                    ).append(RETURN)
+
+            graph.recursive(UmlStub.sInstance, arrayListOf())
+
+            val relationHasDraw = mutableSetOf<Relationship>()
+
+            graph.deepPathList.forEach { path ->
+
+                //todo debug info
+                sb.append("'<")
+                        .append(
+                                path.joinToString {
+                                    it.name
+                                }
+                        )
+                        .append(">").append(RETURN)
+
+                //todo should ignore the relation has added!
+
+                path.forEachWindowSize2 { first: UmlElement, second: UmlElement ->
+
+                    val relationType = graph.getWeight(first, second)
+                    if (relationType > Relation.Stub.type) {
+                        try {
+                            Relation.of(relationType)?.let { relation ->
+                                val relationShip = Relationship(first, second, relation)
+                                if (relationHasDraw.contains(relationShip).not()) {
+                                    relationHasDraw.add(relationShip)
+
+                                    relation.format(
+                                            first, second, nameGetter
+                                    )?.let {
+                                        sb.append(it).append(RETURN)
+                                    }
+                                }
+
+                            }
+
+                        } catch (ignore: Exception) {
+                            sb.append(ignore.localizedMessage).append(RETURN)
+                        }
+                    }
+                }
+            }
+            sb.append("@enduml").append(RETURN)
         }
 
         return Result.newBuilder().handled(true)
-            .reportFileNamePrefix("Diagram")
-            .reportContent(sb.toString())
-            .fileExt("puml")
-            .build()
+                .reportFileNamePrefix("Diagram")
+                .reportContent(sb.toString())
+                .fileExt("puml")
+                .build()
     }
 
-    private fun handleUmlElement(model: Model, diagram: ClassDiagram, graph: DAG<UmlElement>) {
+    private fun handleUmlElement(model: Model, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
         IUmlElementHandler.HandlerImpl.handle(
-            from = UmlStub(diagram),
-            relation = Relation.of(0),
-            element = model.element,
-            diagram = diagram,
-            graph = graph
+                from = UmlStub.sInstance,
+                relation = Relation.Stub,
+                element = model.element,
+                diagram = diagram,
+                graph = graph,
+                cache = cache
         )
 
     }
@@ -102,8 +157,8 @@ class DiagramCompiler : ReporterExtension {
     }
 
     private fun handleGroup(
-        qualifier: Model,
-        candidates: List<Model>
+            qualifier: Model,
+            candidates: List<Model>
     ) {
 
         candidates.forEach {
@@ -127,18 +182,40 @@ class DiagramCompiler : ReporterExtension {
     }
 
     private inline fun <reified T : Annotation?> findAnnotationByAnnotation(
-        annotations: Collection<AnnotationMirror>,
-        clazz: Class<T>
+            annotations: Collection<AnnotationMirror>,
+            clazz: Class<T>
     ): T? {
         if (annotations.isEmpty()) return null // Save an iterator in the common case.
         for (mirror in annotations) {
             val target: Annotation? = mirror.annotationType
-                .asElement()
-                .getAnnotation(clazz)
+                    .asElement()
+                    .getAnnotation(clazz)
             if (target != null) {
                 return target.takeIfInstance<T>()
             }
         }
         return null
+    }
+
+    private class Relationship(val from: UmlElement, val to: UmlElement, val relation: Relation) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Relationship
+
+            if (from != other.from) return false
+            if (to != other.to) return false
+            if (relation != other.relation) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = from.hashCode()
+            result = 31 * result + to.hashCode()
+            result = 31 * result + relation.hashCode()
+            return result
+        }
     }
 }

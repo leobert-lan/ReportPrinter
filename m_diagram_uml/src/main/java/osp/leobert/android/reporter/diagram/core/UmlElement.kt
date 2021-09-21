@@ -10,20 +10,94 @@ import javax.lang.model.element.Element
  * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2021/9/18.
  */
-abstract class UmlElement(val diagram: ClassDiagram, val element: Element?) {
+abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
     val name: String = element?.simpleName?.toString() ?: "Stub"
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as UmlElement
+
+        if (diagram != other.diagram) return false
+        if (element != other.element) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = diagram.hashCode()
+        result = 31 * result + (element?.hashCode() ?: 0)
+        return result
+    }
+
+    abstract fun umlElement(): String
+
 
 }
 
 //inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
 
 
-class UmlStub(diagram: ClassDiagram) : UmlElement(diagram, null)
+class UmlStub private constructor() : UmlElement(null, null) {
 
-class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element)
+    companion object {
+        val sInstance = UmlStub()
+    }
 
-class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+        return true
+    }
 
-class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element)
+    override fun umlElement(): String {
+        return ""
+    }
+
+}
+
+class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+        return true
+    }
+
+    override fun umlElement(): String {
+        return "class $name"
+    }
+
+}
+
+class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+        return true
+    }
+
+    override fun umlElement(): String {
+        return "enum $name"
+    }
+
+}
+
+class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+        return true
+    }
+
+    override fun umlElement(): String {
+        return "interface $name"
+    }
+
+}
 
 

@@ -1,6 +1,5 @@
 package osp.leobert.android.reporter.diagram.core
 
-import com.google.auto.common.MoreTypes
 import osp.leobert.android.maat.dag.DAG
 import osp.leobert.android.maat.dag.Edge
 import osp.leobert.android.reporter.diagram.Utils.ifElement
@@ -18,15 +17,34 @@ sealed interface IUmlElementHandler {
 
     // TODO: 2021/9/18 修改返回，应该处理一个element的结构，而不是element之间的关系
 
-    fun handle(from: UmlElement, relation: Relation, element: Element, diagram: ClassDiagram, graph: DAG<UmlElement>)
+    fun handle(
+        from: UmlElement,
+        relation: Relation,
+        element: Element,
+        diagram: ClassDiagram,
+        graph: DAG<UmlElement>,
+        cache: MutableSet<UmlElement>
+    )
 
     object ClzHandler : IUmlElementHandler {
-        override fun handle(from: UmlElement, relation: Relation, element: Element, diagram: ClassDiagram, graph: DAG<UmlElement>) {
+        override fun handle(
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
+        ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
             //1. model.element to UmlElement
             val cur = UmlClass(diagram, element)
             graph.addEdge(Edge(from, cur, relation.type))
+
+            if (cache.contains(cur)) return
+            cache.add(cur)
+
+            // TODO: 2021/9/19 parse dependency
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -37,7 +55,8 @@ sealed interface IUmlElementHandler {
                         Relation.Generalization,
                         e,
                         diagram,
-                        graph
+                        graph,
+                        cache
                     )
                 }
             }
@@ -51,7 +70,8 @@ sealed interface IUmlElementHandler {
                         Relation.Realization,
                         e,
                         diagram,
-                        graph
+                        graph,
+                        cache
                     )
                 }
 
@@ -62,12 +82,24 @@ sealed interface IUmlElementHandler {
     }
 
     object EnumHandler : IUmlElementHandler {
-        override fun handle(from: UmlElement, relation: Relation, element: Element, diagram: ClassDiagram, graph: DAG<UmlElement>) {
+        override fun handle(
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
+        ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
             //1. model.element to UmlElement
             val cur = UmlEnum(diagram, element)
             graph.addEdge(Edge(from, cur, relation.type))
+
+            if (cache.contains(cur)) return
+            cache.add(cur)
+
+            // TODO: 2021/9/19 parse dependency
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -81,7 +113,8 @@ sealed interface IUmlElementHandler {
                         Relation.Realization,
                         e,
                         diagram,
-                        graph
+                        graph,
+                        cache
                     )
                 }
             }
@@ -92,12 +125,24 @@ sealed interface IUmlElementHandler {
     }
 
     object InterfaceHandler : IUmlElementHandler {
-        override fun handle(from: UmlElement, relation: Relation, element: Element, diagram: ClassDiagram, graph: DAG<UmlElement>) {
+        override fun handle(
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
+        ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
             //1. model.element to UmlElement
             val cur = UmlInterface(diagram, element)
             graph.addEdge(Edge(from, cur, relation.type))
+
+            if (cache.contains(cur)) return
+            cache.add(cur)
+
+            // TODO: 2021/9/19 parse dependency
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -111,7 +156,8 @@ sealed interface IUmlElementHandler {
                         Relation.Realization,
                         e,
                         diagram,
-                        graph
+                        graph,
+                        cache
                     )
                 }
             }
@@ -127,11 +173,18 @@ sealed interface IUmlElementHandler {
             ElementKind.INTERFACE to InterfaceHandler
         )
 
-        override fun handle(from: UmlElement, relation: Relation, element: Element, diagram: ClassDiagram, graph: DAG<UmlElement>) {
+        override fun handle(
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
+        ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
             strategy[element.kind]?.handle(
-                from, relation, element, diagram, graph
+                from, relation, element, diagram, graph, cache
             )
         }
 
