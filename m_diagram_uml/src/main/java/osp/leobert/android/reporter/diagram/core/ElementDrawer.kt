@@ -1,6 +1,9 @@
 package osp.leobert.android.reporter.diagram.core
 
+import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
+import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
+import javax.lang.model.element.VariableElement
 
 const val RETURN = "\r\n"
 
@@ -47,14 +50,57 @@ enum class NameDrawer(val type: String) : IElementDrawer {
     }
 }
 
-enum class ModifierDrawer : IElementDrawer {
-
+interface IJavaxElementDrawer {
+    fun drawAspect(builder: StringBuilder, element: Element)
 }
 
+enum class ModifierDrawer(private val modifier: Modifier, private val mark: String) : IJavaxElementDrawer {
+    Private(Modifier.PRIVATE, "-"),
+    Protected(Modifier.PROTECTED, "#"),
+    Public(Modifier.PUBLIC, "+"),
+    Package(Modifier.DEFAULT, "~"),
+
+    Static(Modifier.STATIC, "{static}"),
+    Abstract(Modifier.ABSTRACT, "{abstract}");
+
+    override fun drawAspect(builder: StringBuilder, element: Element) {
+        if (element.modifiers?.contains(modifier) == true)
+            builder.append(mark)
+    }
+}
+
+object FieldNameDrawer : IJavaxElementDrawer {
+    override fun drawAspect(builder: StringBuilder, element: Element) {
+        builder.append(element.toString())
+    }
+}
+
+object FieldTypeDrawer : IJavaxElementDrawer {
+    override fun drawAspect(builder: StringBuilder, element: Element) {
+        val name =  element.asType().toString()
+        builder.append(" : ").append(name)
+    }
+}
+
+
 object FieldDrawer : IElementDrawer {
+    private val drawer: List<IJavaxElementDrawer> = arrayListOf(
+            //modifiers
+            ModifierDrawer.Static, ModifierDrawer.Abstract,
+            ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
+            FieldNameDrawer, FieldTypeDrawer
+    )
+
     override fun drawAspect(builder: StringBuilder, element: UmlElement) {
         builder.append("'Test:FieldDrawer").append(RETURN)
-        element.drawField(this,builder)
+        element.drawField(this, builder)
+    }
+
+    fun invokeDraw(builder: StringBuilder, element: Element) {
+        drawer.forEach {
+            it.drawAspect(builder, element)
+        }
+        builder.append(RETURN)
     }
 
 }

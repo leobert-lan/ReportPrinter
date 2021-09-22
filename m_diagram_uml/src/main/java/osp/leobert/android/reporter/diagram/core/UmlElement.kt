@@ -2,10 +2,12 @@ package osp.leobert.android.reporter.diagram.core
 
 import osp.leobert.android.maat.dag.DAG
 import osp.leobert.android.reporter.diagram.Utils.ifElement
+import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
 import osp.leobert.android.reporter.diagram.Utils.refersIfDeclaredType
-import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
-import javax.lang.model.element.*
+import javax.lang.model.element.Element
+import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.VariableElement
 import javax.lang.model.util.ElementFilter
 
 /**
@@ -124,14 +126,14 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     }
 
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
-        val tElement = element.takeIfInstance<TypeElement>() ?: return
+        val tElement = element.ifTypeElement() ?: return
 
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
         mFields.addAll(fields)
 
         fields.forEach {
-            handleDependencyViaField(it,diagram, graph, cache)
+            handleDependencyViaField(it, diagram, graph, cache)
         }
 
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
@@ -161,6 +163,8 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         private val drawer = ElementDrawer(NameDrawer.EnumNameDrawer)
     }
 
+    private val mFields: MutableSet<VariableElement> = LinkedHashSet()
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -175,9 +179,43 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
     }
 
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+        val tElement = element.ifTypeElement() ?: return
+
+        val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
+        mFields.clear()
+        mFields.addAll(fields)
+
+        fields.forEach {
+            if (it.asType() != element?.asType())
+                handleDependencyViaField(it, diagram, graph, cache)
+        }
+
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+        mFields.filter {
+            it.asType() == element?.asType()
+        }.let {
+            builder.append(".. enums ..").append(RETURN)
+            it.forEach { field ->
+                builder.append(field.toString()).append(RETURN)
+            }
+        }
+
+        mFields.filter {
+            it.asType() != element?.asType()
+        }.let {
+            builder.append(".. fields ..").append(RETURN)
+            it.forEach { field ->
+                fieldDrawer.invokeDraw(builder, field)
+                //todo 使用FieldDrawer this is a test
+                builder.append("'").append(field.toString())
+                        .append(":").append(field.asType().toString())
+                        .append("//").append(field.modifiers)
+                        .append("//").append(field.asType().javaClass.name)
+                        .append(RETURN)
+            }
+        }
     }
 
 }
@@ -204,14 +242,14 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     }
 
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
-        val tElement = element.takeIfInstance<TypeElement>() ?: return
+        val tElement = element.ifTypeElement() ?: return
 
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
         mFields.addAll(fields)
 
         fields.forEach {
-            handleDependencyViaField(it,diagram, graph, cache)
+            handleDependencyViaField(it, diagram, graph, cache)
         }
 
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)

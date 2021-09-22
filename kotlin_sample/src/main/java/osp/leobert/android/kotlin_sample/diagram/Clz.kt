@@ -46,16 +46,35 @@ class CWildcard<T, M> {
 class A
 class B
 
+//public enum Enum {
+//   E1,
+//   E2;
+//
+//   @Nullable
+//   private final A a;
+//
+//   @Nullable
+//   public final A getA() {
+//      return this.a;
+//   }
+//
+//   private Enum(A a) {
+//      this.a = a;
+//   }
+//}
 @ClassDiagram("AAA")
-enum class Enum {}
+enum class Enum(public val a: A?) {
+    E1(null), E2(null)
+}
 
 @ClassDiagram("AAA")
 interface InterFace {
     companion object {
         @JvmStatic
-        val a:Enum? = null
+        val a: Enum? = null
     }
-    val eInInterface:Enum?
+
+    val eInInterface: Enum?
 }
 
 @ClassDiagram("AAA")
@@ -63,5 +82,9 @@ sealed interface SealedI : InterFace {}
 
 
 @ClassDiagram("AAAB")
-sealed class SealedClz
+sealed class SealedClz {
+    fun m() {
+        print(Enum.E1.a)
+    }
+}
 

@@ -3,12 +3,11 @@ package osp.leobert.android.reporter.diagram.core
 import osp.leobert.android.maat.dag.DAG
 import osp.leobert.android.maat.dag.Edge
 import osp.leobert.android.reporter.diagram.Utils.ifElement
+import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
 import osp.leobert.android.reporter.diagram.Utils.shouldIgnoreEmlElement
-import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
-import javax.lang.model.element.TypeElement
 
 /**
  * Created by leobert on 2021/9/18.
@@ -47,7 +46,7 @@ sealed interface IUmlElementHandler {
 
             //2. parse extends
             // Generalization : only Object for enum
-            element.takeIfInstance<TypeElement>()?.superclass?.let {
+            element.ifTypeElement()?.superclass?.let {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
                             cur,
@@ -61,7 +60,7 @@ sealed interface IUmlElementHandler {
             }
 
             //3. parse implement
-            val interfaces = element.takeIfInstance<TypeElement>()?.interfaces
+            val interfaces = element.ifTypeElement()?.interfaces
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
@@ -105,7 +104,7 @@ sealed interface IUmlElementHandler {
             // Generalization : only Object for enum
 
             //3. parse implement
-            val interfaces = element.takeIfInstance<TypeElement>()?.interfaces
+            val interfaces = element.ifTypeElement()?.interfaces
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
@@ -149,7 +148,7 @@ sealed interface IUmlElementHandler {
             // Generalization : only Object for enum
 
             //3. parse implement
-            val interfaces = element.takeIfInstance<TypeElement>()?.interfaces
+            val interfaces = element.ifTypeElement()?.interfaces
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(

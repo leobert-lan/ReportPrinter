@@ -1,16 +1,12 @@
 package osp.leobert.android.reporter.diagram
 
+import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
-import osp.leobert.android.reporter.diagram.Utils.ifElement
-import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
-import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
-import osp.leobert.android.reporter.diagram.core.Relation
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
-import javax.lang.model.type.WildcardType
 
 /**
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram </p>
@@ -30,8 +26,17 @@ object Utils {
         return null
     }
 
+    fun Element?.ifTypeElement(): TypeElement? {
+        return try {
+            if (this == null) return null
+            MoreElements.asType(this)
+        } catch (ignore: Exception) {
+            null
+        }
+    }
 
-    fun TypeMirror.refersIfDeclaredType():MutableSet<TypeMirror> {
+
+    fun TypeMirror.refersIfDeclaredType(): MutableSet<TypeMirror> {
         val ret = linkedSetOf<TypeMirror>()
         ret.add(this)
         val typeParameters = this.takeIfInstance<DeclaredType>()?.typeArguments
