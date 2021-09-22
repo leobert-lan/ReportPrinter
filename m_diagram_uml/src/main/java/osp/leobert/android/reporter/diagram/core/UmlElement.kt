@@ -145,7 +145,8 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
         mFields.let {
-            builder.append(".. fields ..").append(RETURN)
+            if (it.isNotEmpty())
+                builder.append(".. fields ..").append(RETURN)
             it.forEach { field ->
                 fieldDrawer.invokeDraw(builder, field, context)
                 //todo 使用FieldDrawer this is a test
@@ -261,9 +262,12 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
-        //todo test
-        mFields.forEach { field: VariableElement ->
-            builder.append(field.toString()).append(RETURN)
+        mFields.let {
+            if (it.isNotEmpty())
+                builder.append(".. fields ..").append(RETURN)
+            it.forEach { field ->
+                fieldDrawer.invokeDraw(builder, field, context)
+            }
         }
     }
 

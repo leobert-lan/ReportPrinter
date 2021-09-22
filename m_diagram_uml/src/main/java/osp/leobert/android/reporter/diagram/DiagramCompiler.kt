@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi
 import com.google.auto.service.AutoService
 import osp.leobert.android.maat.dag.DAG
 import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
+import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
 import osp.leobert.android.reporter.diagram.core.Relation
@@ -54,7 +55,8 @@ class DiagramCompiler : ReporterExtension {
 
         //todo consider alias
         val nameGetter = { element: UmlElement ->
-            element.name
+            val removePkg = element.element.nameRemovedPkg(element.name)
+            removePkg.substring(0, removePkg.indexOf(element.name) + element.name.length)
         }
 
         groups.forEach { (qualifierName: String, u: MutableList<Pair<ClassDiagram, Model>>) ->

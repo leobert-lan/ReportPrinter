@@ -4,6 +4,7 @@ import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
@@ -24,6 +25,18 @@ object Utils {
     inline fun <reified R> Any?.takeIfInstance(): R? {
         if (this is R) return this
         return null
+    }
+
+    fun Element?.nameRemovedPkg(ifNull:String): String {
+        val fullName = this?.asType()?.toString() ?: ifNull
+
+        var tmp = this?.enclosingElement
+        while (tmp!= null && tmp.kind!= ElementKind.PACKAGE) {
+            tmp = tmp.enclosingElement
+        }
+
+        val pkg = tmp?.asType()?.toString()?.run { "$this." } ?: ""
+        return fullName.replace(pkg, "")
     }
 
     fun Element?.ifTypeElement(): TypeElement? {

@@ -1,5 +1,6 @@
 package osp.leobert.android.reporter.diagram.core
 
+import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 
@@ -44,7 +45,7 @@ enum class NameDrawer(val type: String) : IElementDrawer {
     ClzNameDrawer("class "), EnumNameDrawer("enum "), InterfaceNameDrawer("interface ");
 
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
-        builder.append(type).append(element.name)
+        builder.append(type).append(element.element.nameRemovedPkg(element.name))
     }
 }
 
@@ -76,7 +77,8 @@ object FieldNameDrawer : IJavaxElementDrawer {
 object FieldTypeDrawer : IJavaxElementDrawer {
     //todo 目前全类名太长了，可以适当考虑简化，因为类的依赖已经有了，所以可以从中找出替换，但是需要补充参数！
     override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
-        var name = element.asType().toString()
+
+        var name = element.nameRemovedPkg(element.asType().toString())
 
         context.forEach {
             val original = it.element?.asType()?.toString()
