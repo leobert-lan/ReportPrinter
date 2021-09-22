@@ -45,7 +45,7 @@ enum class NameDrawer(val type: String) : IElementDrawer {
     ClzNameDrawer("class "), EnumNameDrawer("enum "), InterfaceNameDrawer("interface ");
 
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
-        builder.append(type).append(element.element.nameRemovedPkg(element.name))
+        builder.append(type).append("\"").append(element.element.nameRemovedPkg(element.name)).append("\"")
     }
 }
 

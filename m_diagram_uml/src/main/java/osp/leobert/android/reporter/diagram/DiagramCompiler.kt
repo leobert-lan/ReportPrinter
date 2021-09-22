@@ -56,7 +56,8 @@ class DiagramCompiler : ReporterExtension {
         //todo consider alias
         val nameGetter = { element: UmlElement ->
             val removePkg = element.element.nameRemovedPkg(element.name)
-            removePkg.substring(0, removePkg.indexOf(element.name) + element.name.length)
+//            removePkg.substring(0, removePkg.indexOf(element.name) + element.name.length)
+            "\"$removePkg\""
         }
 
         groups.forEach { (qualifierName: String, u: MutableList<Pair<ClassDiagram, Model>>) ->
@@ -92,7 +93,7 @@ class DiagramCompiler : ReporterExtension {
                 sb.append("'<")
                         .append(
                                 path.joinToString {
-                                    it.name
+                                    it.element?.nameRemovedPkg(it.name)?:it.name
                                 }
                         )
                         .append(">").append(RETURN)
