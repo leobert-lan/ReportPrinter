@@ -1,10 +1,16 @@
 package osp.leobert.android.reporter.diagram
 
 import com.google.auto.common.MoreTypes
+import osp.leobert.android.reporter.diagram.Utils.ifElement
+import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
+import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
+import osp.leobert.android.reporter.diagram.core.Relation
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.DeclaredType
 import javax.lang.model.type.TypeMirror
+import javax.lang.model.type.WildcardType
 
 /**
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram </p>
@@ -24,6 +30,20 @@ object Utils {
         return null
     }
 
+
+    fun TypeMirror.refersIfDeclaredType():MutableSet<TypeMirror> {
+        val ret = linkedSetOf<TypeMirror>()
+        ret.add(this)
+        val typeParameters = this.takeIfInstance<DeclaredType>()?.typeArguments
+        if (!typeParameters.isNullOrEmpty()) {
+
+            typeParameters.forEach { typeParameter ->
+                ret.addAll(typeParameter.refersIfDeclaredType())
+            }
+        }
+        return ret
+    }
+
     fun TypeMirror.ifElement(): Element? {
         return try {
             MoreTypes.asElement(this)
@@ -34,7 +54,7 @@ object Utils {
 
     fun shouldIgnoreEmlElement(element: Element, diagram: ClassDiagram): Boolean {
         if (element !is TypeElement) return true
-        if (element.qualifiedName.toString() == "java.lang.Object") return true
+        if (element.qualifiedName.toString().startsWith("java.")) return true
 
 //        todo diagram config parse
         return false

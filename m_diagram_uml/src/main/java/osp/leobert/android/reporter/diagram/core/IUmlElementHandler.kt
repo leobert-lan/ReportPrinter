@@ -15,25 +15,23 @@ import javax.lang.model.element.TypeElement
  */
 sealed interface IUmlElementHandler {
 
-    // TODO: 2021/9/18 修改返回，应该处理一个element的结构，而不是element之间的关系
-
     fun handle(
-        from: UmlElement,
-        relation: Relation,
-        element: Element,
-        diagram: ClassDiagram,
-        graph: DAG<UmlElement>,
-        cache: MutableSet<UmlElement>
-    )
-
-    object ClzHandler : IUmlElementHandler {
-        override fun handle(
             from: UmlElement,
             relation: Relation,
             element: Element,
             diagram: ClassDiagram,
             graph: DAG<UmlElement>,
             cache: MutableSet<UmlElement>
+    )
+
+    object ClzHandler : IUmlElementHandler {
+        override fun handle(
+                from: UmlElement,
+                relation: Relation,
+                element: Element,
+                diagram: ClassDiagram,
+                graph: DAG<UmlElement>,
+                cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
@@ -44,19 +42,20 @@ sealed interface IUmlElementHandler {
             if (cache.contains(cur)) return
             cache.add(cur)
 
-            // TODO: 2021/9/19 parse dependency
+            //parse details
+            cur.parseFieldAndMethod(diagram, graph, cache)
 
             //2. parse extends
             // Generalization : only Object for enum
             element.takeIfInstance<TypeElement>()?.superclass?.let {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                        cur,
-                        Relation.Generalization,
-                        e,
-                        diagram,
-                        graph,
-                        cache
+                            cur,
+                            Relation.Generalization,
+                            e,
+                            diagram,
+                            graph,
+                            cache
                     )
                 }
             }
@@ -66,12 +65,12 @@ sealed interface IUmlElementHandler {
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                        cur,
-                        Relation.Realization,
-                        e,
-                        diagram,
-                        graph,
-                        cache
+                            cur,
+                            Relation.Realization,
+                            e,
+                            diagram,
+                            graph,
+                            cache
                     )
                 }
 
@@ -83,12 +82,12 @@ sealed interface IUmlElementHandler {
 
     object EnumHandler : IUmlElementHandler {
         override fun handle(
-            from: UmlElement,
-            relation: Relation,
-            element: Element,
-            diagram: ClassDiagram,
-            graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+                from: UmlElement,
+                relation: Relation,
+                element: Element,
+                diagram: ClassDiagram,
+                graph: DAG<UmlElement>,
+                cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
@@ -99,7 +98,8 @@ sealed interface IUmlElementHandler {
             if (cache.contains(cur)) return
             cache.add(cur)
 
-            // TODO: 2021/9/19 parse dependency
+            //parse details
+            cur.parseFieldAndMethod(diagram, graph, cache)
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -109,12 +109,12 @@ sealed interface IUmlElementHandler {
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                        cur,
-                        Relation.Realization,
-                        e,
-                        diagram,
-                        graph,
-                        cache
+                            cur,
+                            Relation.Realization,
+                            e,
+                            diagram,
+                            graph,
+                            cache
                     )
                 }
             }
@@ -126,12 +126,12 @@ sealed interface IUmlElementHandler {
 
     object InterfaceHandler : IUmlElementHandler {
         override fun handle(
-            from: UmlElement,
-            relation: Relation,
-            element: Element,
-            diagram: ClassDiagram,
-            graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+                from: UmlElement,
+                relation: Relation,
+                element: Element,
+                diagram: ClassDiagram,
+                graph: DAG<UmlElement>,
+                cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
@@ -142,7 +142,8 @@ sealed interface IUmlElementHandler {
             if (cache.contains(cur)) return
             cache.add(cur)
 
-            // TODO: 2021/9/19 parse dependency
+            //parse details
+            cur.parseFieldAndMethod(diagram, graph, cache)
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -152,12 +153,12 @@ sealed interface IUmlElementHandler {
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                        cur,
-                        Relation.Realization,
-                        e,
-                        diagram,
-                        graph,
-                        cache
+                            cur,
+                            Relation.Realization,
+                            e,
+                            diagram,
+                            graph,
+                            cache
                     )
                 }
             }
@@ -168,25 +169,24 @@ sealed interface IUmlElementHandler {
 
     object HandlerImpl : IUmlElementHandler {
         private val strategy = mapOf(
-            ElementKind.ENUM to EnumHandler,
-            ElementKind.CLASS to ClzHandler,
-            ElementKind.INTERFACE to InterfaceHandler
+                ElementKind.ENUM to EnumHandler,
+                ElementKind.CLASS to ClzHandler,
+                ElementKind.INTERFACE to InterfaceHandler
         )
 
         override fun handle(
-            from: UmlElement,
-            relation: Relation,
-            element: Element,
-            diagram: ClassDiagram,
-            graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+                from: UmlElement,
+                relation: Relation,
+                element: Element,
+                diagram: ClassDiagram,
+                graph: DAG<UmlElement>,
+                cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
             strategy[element.kind]?.handle(
-                from, relation, element, diagram, graph, cache
+                    from, relation, element, diagram, graph, cache
             )
         }
-
     }
 }

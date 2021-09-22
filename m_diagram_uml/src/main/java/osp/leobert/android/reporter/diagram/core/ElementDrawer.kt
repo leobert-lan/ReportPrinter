@@ -53,6 +53,8 @@ enum class ModifierDrawer : IElementDrawer {
 
 object FieldDrawer : IElementDrawer {
     override fun drawAspect(builder: StringBuilder, element: UmlElement) {
+        builder.append("'Test:FieldDrawer").append(RETURN)
+        element.drawField(this,builder)
     }
 
 }

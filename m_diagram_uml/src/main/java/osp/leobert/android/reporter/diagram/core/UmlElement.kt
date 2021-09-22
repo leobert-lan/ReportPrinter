@@ -1,7 +1,12 @@
 package osp.leobert.android.reporter.diagram.core
 
+import osp.leobert.android.maat.dag.DAG
+import osp.leobert.android.reporter.diagram.Utils.ifElement
+import osp.leobert.android.reporter.diagram.Utils.refersIfDeclaredType
+import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
-import javax.lang.model.element.Element
+import javax.lang.model.element.*
+import javax.lang.model.util.ElementFilter
 
 /**
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram.core </p>
@@ -31,6 +36,38 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
     }
 
     abstract fun umlElement(): String
+    abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>)
+    abstract fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder)
+
+    protected fun handleDependencyViaField(variableElement: VariableElement, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+        val vType = variableElement.asType()
+        if (vType.kind.isPrimitive) {
+            return
+        }
+
+        val e = variableElement.asType().ifElement()
+        //todo consider Collections(wildcard) and arrays!
+
+
+        //1. handle wildcard
+        val refers = variableElement.asType().refersIfDeclaredType()
+        if (!refers.isNullOrEmpty()) {
+            refers.forEach { refer ->
+                refer.ifElement()?.let { ele ->
+                    IUmlElementHandler.HandlerImpl.handle(from = this, relation = Relation.Dependency,
+                            element = ele, diagram = diagram, graph = graph, cache = cache)
+
+                }
+            }
+            return
+        }
+
+        //handle normal
+        if (e != null) {
+            IUmlElementHandler.HandlerImpl.handle(from = this, relation = Relation.Dependency, element = e, diagram = diagram, graph = graph, cache = cache)
+            return
+        }
+    }
 }
 
 //inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
@@ -53,6 +90,12 @@ class UmlStub private constructor() : UmlElement(null, null) {
         return ""
     }
 
+    override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+    }
+
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+    }
+
 }
 
 class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
@@ -63,6 +106,9 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
             this.modifierDrawer.add(AbstractTypeDrawer)
         }
     }
+
+    private val mFields: MutableSet<VariableElement> = LinkedHashSet()
+    private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -75,6 +121,37 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         val builder = StringBuilder()
         drawer.drawAspect(builder, this)
         return builder.toString()
+    }
+
+    override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+        val tElement = element.takeIfInstance<TypeElement>() ?: return
+
+        val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
+        mFields.clear()
+        mFields.addAll(fields)
+
+        fields.forEach {
+            handleDependencyViaField(it,diagram, graph, cache)
+        }
+
+        val methods = ElementFilter.methodsIn(tElement.enclosedElements)
+        mMethods.clear()
+        mMethods.addAll(methods)
+
+
+    }
+
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+        //todo test
+        mFields.forEach { field: VariableElement ->
+
+
+            builder.append("'").append(field.toString())
+                    .append(":").append(field.asType().toString())
+                    .append("//").append(field.asType().ifElement()?.simpleName)
+                    .append("//").append(field.asType().javaClass.name)
+                    .append(RETURN)
+        }
     }
 
 }
@@ -97,12 +174,21 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         return builder.toString()
     }
 
+    override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+    }
+
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+    }
+
 }
 
 class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
     companion object {
         private val drawer = ElementDrawer(NameDrawer.InterfaceNameDrawer)
     }
+
+    private val mFields: MutableSet<VariableElement> = LinkedHashSet()
+    private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -115,6 +201,31 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         val builder = StringBuilder()
         drawer.drawAspect(builder, this)
         return builder.toString()
+    }
+
+    override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+        val tElement = element.takeIfInstance<TypeElement>() ?: return
+
+        val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
+        mFields.clear()
+        mFields.addAll(fields)
+
+        fields.forEach {
+            handleDependencyViaField(it,diagram, graph, cache)
+        }
+
+        val methods = ElementFilter.methodsIn(tElement.enclosedElements)
+        mMethods.clear()
+        mMethods.addAll(methods)
+
+
+    }
+
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+        //todo test
+        mFields.forEach { field: VariableElement ->
+            builder.append(field.toString()).append(RETURN)
+        }
     }
 
 }
