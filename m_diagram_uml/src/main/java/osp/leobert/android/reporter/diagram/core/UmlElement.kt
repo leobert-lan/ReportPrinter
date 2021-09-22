@@ -70,6 +70,8 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
             return
         }
     }
+
+    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>)
 }
 
 //inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
@@ -96,6 +98,9 @@ class UmlStub private constructor() : UmlElement(null, null) {
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    }
+
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
     }
 
 }
@@ -146,14 +151,24 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
         mFields.let {
             if (it.isNotEmpty())
-                builder.append(".. fields ..").append(RETURN)
+                builder.append("  .. fields ..").append(RETURN)
             it.forEach { field ->
                 fieldDrawer.invokeDraw(builder, field, context)
-                //todo 使用FieldDrawer this is a test
-                builder.append("'").append(field.toString())
-                        .append(":").append(field.asType().toString())
-                        .append("//").append(field.asType().ifElement()?.simpleName)
-                        .append(RETURN)
+//                //todo 使用FieldDrawer this is a test
+//                builder.append("'").append(field.toString())
+//                        .append(":").append(field.asType().toString())
+//                        .append("//").append(field.asType().ifElement()?.simpleName)
+//                        .append(RETURN)
+            }
+        }
+    }
+
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+        mMethods.let {
+            if (it.isNotEmpty())
+                builder.append("  .. methods ..").append(RETURN)
+            it.forEach { method ->
+                methodDrawer.invokeDraw(builder, method, context)
             }
         }
     }
@@ -166,6 +181,7 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
     }
 
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
+    private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -192,30 +208,43 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
                 handleDependencyViaField(it, diagram, graph, cache)
         }
 
+        val methods = ElementFilter.methodsIn(tElement.enclosedElements)
+        mMethods.clear()
+        mMethods.addAll(methods)
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
         mFields.filter {
             it.asType() == element?.asType()
         }.let {
-            builder.append(".. enums ..").append(RETURN)
+            builder.append("  .. enums ..").append(RETURN)
             it.forEach { field ->
-                builder.append(field.toString()).append(RETURN)
+                builder.append("  ").append(field.toString()).append(RETURN)
             }
         }
 
         mFields.filter {
             it.asType() != element?.asType()
         }.let {
-            builder.append(".. fields ..").append(RETURN)
+            builder.append("  .. fields ..").append(RETURN)
             it.forEach { field ->
                 fieldDrawer.invokeDraw(builder, field, context)
-                //todo 使用FieldDrawer this is a test
-                builder.append("'").append(field.toString())
-                        .append(":").append(field.asType().toString())
-                        .append("//").append(field.modifiers)
-                        .append("//").append(field.asType().ifElement()?.simpleName)
-                        .append(RETURN)
+//                //todo 使用FieldDrawer this is a test
+//                builder.append("'").append(field.toString())
+//                        .append(":").append(field.asType().toString())
+//                        .append("//").append(field.modifiers)
+//                        .append("//").append(field.asType().ifElement()?.simpleName)
+//                        .append(RETURN)
+            }
+        }
+    }
+
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+        mMethods.let {
+            if (it.isNotEmpty())
+                builder.append("  .. methods ..").append(RETURN)
+            it.forEach { method ->
+                methodDrawer.invokeDraw(builder, method, context)
             }
         }
     }
@@ -257,16 +286,24 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
         mMethods.clear()
         mMethods.addAll(methods)
-
-
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
         mFields.let {
             if (it.isNotEmpty())
-                builder.append(".. fields ..").append(RETURN)
+                builder.append("  .. fields ..").append(RETURN)
             it.forEach { field ->
                 fieldDrawer.invokeDraw(builder, field, context)
+            }
+        }
+    }
+
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+        mMethods.let {
+            if (it.isNotEmpty())
+                builder.append("  .. methods ..").append(RETURN)
+            it.forEach { method ->
+                methodDrawer.invokeDraw(builder, method, context)
             }
         }
     }

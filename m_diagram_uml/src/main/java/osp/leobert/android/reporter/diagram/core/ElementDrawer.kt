@@ -1,6 +1,8 @@
 package osp.leobert.android.reporter.diagram.core
 
+import com.sun.tools.javac.code.Type
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
+import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 
@@ -94,6 +96,11 @@ object FieldTypeDrawer : IJavaxElementDrawer {
 
 object FieldDrawer : IElementDrawer {
     private val drawer: List<IJavaxElementDrawer> = arrayListOf(
+            object : IJavaxElementDrawer {
+                override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+                    builder.append("  {field}")
+                }
+            },
             //modifiers
             ModifierDrawer.Static, ModifierDrawer.Abstract,
             ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
@@ -101,7 +108,6 @@ object FieldDrawer : IElementDrawer {
     )
 
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
-        builder.append("'Test:FieldDrawer").append(RETURN)
         element.drawField(this, builder, context)
     }
 
@@ -111,10 +117,55 @@ object FieldDrawer : IElementDrawer {
         }
         builder.append(RETURN)
     }
+}
 
+object MethodSignatureDrawer : IJavaxElementDrawer {
+    override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+        val tmp = element.asType().takeIfInstance<Type.MethodType>()
+        builder.append(" ").append(element.simpleName)
+        if (tmp == null) {
+            builder.append(element.asType().toString())
+        } else {
+            var info = "(${tmp.argtypes.joinToString { it.asElement().nameRemovedPkg(it.toString()) }}): ${tmp.restype.run { asElement().nameRemovedPkg(toString()) }}"
+
+            context.forEach {
+                val original = it.element?.asType()?.toString()
+                if (!original.isNullOrBlank()) {
+                    info = info.replace(original, it.name)
+                }
+            }
+
+            builder.append(info)
+
+//            if (tmp.thrown.isNotEmpty()) {
+//                builder.append(" throws ")
+//            }
+        }
+    }
 }
 
 object MethodDrawer : IElementDrawer {
+    private val drawer: List<IJavaxElementDrawer> = arrayListOf(
+            object : IJavaxElementDrawer {
+                override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+                    builder.append("  {method}")
+                }
+            },
+            //modifiers
+            ModifierDrawer.Static, ModifierDrawer.Abstract,
+            ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
+            MethodSignatureDrawer
+    )
+
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
+//        builder.append("'Test:MethodDrawer").append(RETURN)
+        element.drawMethod(this, builder, context)
+    }
+
+    fun invokeDraw(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+        drawer.forEach {
+            it.drawAspect(builder, element, context)
+        }
+        builder.append(RETURN)
     }
 }
