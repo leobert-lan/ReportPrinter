@@ -101,8 +101,6 @@ class DiagramCompiler : ReporterExtension {
                         )
                         .append(">").append(RETURN)
 
-                //todo should ignore the relation has added!
-
                 path.forEachWindowSize2 { first: UmlElement, second: UmlElement ->
 
                     val relationType = graph.getWeight(first, second)

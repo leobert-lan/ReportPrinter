@@ -13,9 +13,14 @@ import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 @ClassDiagram("AAA")
 annotation class DemoDiagram
 
+@DemoDiagram
+open abstract class SuperClz : SealedI {
+
+}
+
 @ClassDiagram
 @DemoDiagram
-class Clz : SealedI {
+class Clz : SuperClz(), SealedI {
 }
 
 @ClassDiagram("AAA")

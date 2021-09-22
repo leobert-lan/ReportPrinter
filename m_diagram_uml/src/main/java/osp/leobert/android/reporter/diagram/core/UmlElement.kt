@@ -31,8 +31,6 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
     }
 
     abstract fun umlElement(): String
-
-
 }
 
 //inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
@@ -59,6 +57,13 @@ class UmlStub private constructor() : UmlElement(null, null) {
 
 class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
 
+    companion object {
+        private val drawer = ElementDrawer(NameDrawer.ClzNameDrawer).apply {
+            this.modifierDrawer.remove(AbstractTypeDrawer)
+            this.modifierDrawer.add(AbstractTypeDrawer)
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -67,12 +72,18 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     }
 
     override fun umlElement(): String {
-        return "class $name"
+        val builder = StringBuilder()
+        drawer.drawAspect(builder, this)
+        return builder.toString()
     }
 
 }
 
 class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
+    companion object {
+        private val drawer = ElementDrawer(NameDrawer.EnumNameDrawer)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -81,12 +92,18 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
     }
 
     override fun umlElement(): String {
-        return "enum $name"
+        val builder = StringBuilder()
+        drawer.drawAspect(builder, this)
+        return builder.toString()
     }
 
 }
 
 class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
+    companion object {
+        private val drawer = ElementDrawer(NameDrawer.InterfaceNameDrawer)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -95,7 +112,9 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     }
 
     override fun umlElement(): String {
-        return "interface $name"
+        val builder = StringBuilder()
+        drawer.drawAspect(builder, this)
+        return builder.toString()
     }
 
 }
