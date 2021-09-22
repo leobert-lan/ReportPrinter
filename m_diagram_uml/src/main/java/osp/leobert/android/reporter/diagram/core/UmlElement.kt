@@ -37,9 +37,9 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
         return result
     }
 
-    abstract fun umlElement(): String
+    abstract fun umlElement(context: MutableSet<UmlElement>): String
     abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>)
-    abstract fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder)
+    abstract fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>)
 
     protected fun handleDependencyViaField(variableElement: VariableElement, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
         val vType = variableElement.asType()
@@ -88,14 +88,14 @@ class UmlStub private constructor() : UmlElement(null, null) {
         return true
     }
 
-    override fun umlElement(): String {
+    override fun umlElement(context: MutableSet<UmlElement>): String {
         return ""
     }
 
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
     }
 
 }
@@ -119,9 +119,9 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         return true
     }
 
-    override fun umlElement(): String {
+    override fun umlElement(context: MutableSet<UmlElement>): String {
         val builder = StringBuilder()
-        drawer.drawAspect(builder, this)
+        drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
 
@@ -143,16 +143,17 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
 
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
-        //todo test
-        mFields.forEach { field: VariableElement ->
-
-
-            builder.append("'").append(field.toString())
-                    .append(":").append(field.asType().toString())
-                    .append("//").append(field.asType().ifElement()?.simpleName)
-                    .append("//").append(field.asType().javaClass.name)
-                    .append(RETURN)
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+        mFields.let {
+            builder.append(".. fields ..").append(RETURN)
+            it.forEach { field ->
+                fieldDrawer.invokeDraw(builder, field, context)
+                //todo 使用FieldDrawer this is a test
+                builder.append("'").append(field.toString())
+                        .append(":").append(field.asType().toString())
+                        .append("//").append(field.asType().ifElement()?.simpleName)
+                        .append(RETURN)
+            }
         }
     }
 
@@ -172,9 +173,9 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         return true
     }
 
-    override fun umlElement(): String {
+    override fun umlElement(context: MutableSet<UmlElement>): String {
         val builder = StringBuilder()
-        drawer.drawAspect(builder, this)
+        drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
 
@@ -192,7 +193,7 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
 
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
         mFields.filter {
             it.asType() == element?.asType()
         }.let {
@@ -207,12 +208,12 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         }.let {
             builder.append(".. fields ..").append(RETURN)
             it.forEach { field ->
-                fieldDrawer.invokeDraw(builder, field)
+                fieldDrawer.invokeDraw(builder, field, context)
                 //todo 使用FieldDrawer this is a test
                 builder.append("'").append(field.toString())
                         .append(":").append(field.asType().toString())
                         .append("//").append(field.modifiers)
-                        .append("//").append(field.asType().javaClass.name)
+                        .append("//").append(field.asType().ifElement()?.simpleName)
                         .append(RETURN)
             }
         }
@@ -235,9 +236,9 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         return true
     }
 
-    override fun umlElement(): String {
+    override fun umlElement(context: MutableSet<UmlElement>): String {
         val builder = StringBuilder()
-        drawer.drawAspect(builder, this)
+        drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
 
@@ -259,7 +260,7 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
 
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
         //todo test
         mFields.forEach { field: VariableElement ->
             builder.append(field.toString()).append(RETURN)

@@ -77,14 +77,8 @@ class DiagramCompiler : ReporterExtension {
 
             // draw all uml-element
             cache.forEach {
-                sb.append(it.umlElement()).append(RETURN)
+                sb.append(it.umlElement(cache)).append(RETURN)
             }
-
-//            //todo debug info
-//            sb.append("'").append(qualifierName).append(" --> ").append(RETURN)
-//                    .append(
-//                            graph.debugMatrix().replace("\r\n", "\r\n'")
-//                    ).append(RETURN)
 
             graph.recursive(UmlStub.sInstance, arrayListOf())
 

@@ -1,14 +1,12 @@
 package osp.leobert.android.reporter.diagram.core
 
-import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
-import javax.lang.model.element.VariableElement
 
 const val RETURN = "\r\n"
 
 interface IElementDrawer {
-    fun drawAspect(builder: StringBuilder, element: UmlElement)
+    fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>)
 }
 
 class ElementDrawer(private val nameDrawer: NameDrawer) : IElementDrawer {
@@ -19,21 +17,21 @@ class ElementDrawer(private val nameDrawer: NameDrawer) : IElementDrawer {
     var methodDrawer: MethodDrawer? = MethodDrawer
 
 
-    override fun drawAspect(builder: StringBuilder, element: UmlElement) {
+    override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
         modifierDrawer.forEach {
-            it.drawAspect(builder, element)
+            it.drawAspect(builder, element, context)
         }
 
-        nameDrawer.drawAspect(builder, element)
+        nameDrawer.drawAspect(builder, element, context)
         builder.append("{").append(RETURN)
-        fieldDrawer?.drawAspect(builder, element)
-        methodDrawer?.drawAspect(builder, element)
+        fieldDrawer?.drawAspect(builder, element, context)
+        methodDrawer?.drawAspect(builder, element, context)
         builder.append("}").append(RETURN)
     }
 }
 
 object AbstractTypeDrawer : IElementDrawer {
-    override fun drawAspect(builder: StringBuilder, element: UmlElement) {
+    override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
         val isAbsType = element.element?.modifiers?.contains(Modifier.ABSTRACT)
         if (isAbsType == true) {
             builder.append("abstract ")
@@ -45,13 +43,13 @@ object AbstractTypeDrawer : IElementDrawer {
 enum class NameDrawer(val type: String) : IElementDrawer {
     ClzNameDrawer("class "), EnumNameDrawer("enum "), InterfaceNameDrawer("interface ");
 
-    override fun drawAspect(builder: StringBuilder, element: UmlElement) {
+    override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
         builder.append(type).append(element.name)
     }
 }
 
 interface IJavaxElementDrawer {
-    fun drawAspect(builder: StringBuilder, element: Element)
+    fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>)
 }
 
 enum class ModifierDrawer(private val modifier: Modifier, private val mark: String) : IJavaxElementDrawer {
@@ -63,21 +61,30 @@ enum class ModifierDrawer(private val modifier: Modifier, private val mark: Stri
     Static(Modifier.STATIC, "{static}"),
     Abstract(Modifier.ABSTRACT, "{abstract}");
 
-    override fun drawAspect(builder: StringBuilder, element: Element) {
+    override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
         if (element.modifiers?.contains(modifier) == true)
             builder.append(mark)
     }
 }
 
 object FieldNameDrawer : IJavaxElementDrawer {
-    override fun drawAspect(builder: StringBuilder, element: Element) {
+    override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
         builder.append(element.toString())
     }
 }
 
 object FieldTypeDrawer : IJavaxElementDrawer {
-    override fun drawAspect(builder: StringBuilder, element: Element) {
-        val name =  element.asType().toString()
+    //todo 目前全类名太长了，可以适当考虑简化，因为类的依赖已经有了，所以可以从中找出替换，但是需要补充参数！
+    override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+        var name = element.asType().toString()
+
+        context.forEach {
+            val original = it.element?.asType()?.toString()
+            if (!original.isNullOrBlank()) {
+                name = name.replace(original, it.name)
+            }
+        }
+
         builder.append(" : ").append(name)
     }
 }
@@ -91,14 +98,14 @@ object FieldDrawer : IElementDrawer {
             FieldNameDrawer, FieldTypeDrawer
     )
 
-    override fun drawAspect(builder: StringBuilder, element: UmlElement) {
+    override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
         builder.append("'Test:FieldDrawer").append(RETURN)
-        element.drawField(this, builder)
+        element.drawField(this, builder, context)
     }
 
-    fun invokeDraw(builder: StringBuilder, element: Element) {
+    fun invokeDraw(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
         drawer.forEach {
-            it.drawAspect(builder, element)
+            it.drawAspect(builder, element, context)
         }
         builder.append(RETURN)
     }
@@ -106,6 +113,6 @@ object FieldDrawer : IElementDrawer {
 }
 
 object MethodDrawer : IElementDrawer {
-    override fun drawAspect(builder: StringBuilder, element: UmlElement) {
+    override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
     }
 }
