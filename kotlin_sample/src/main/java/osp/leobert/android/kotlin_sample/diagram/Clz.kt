@@ -1,6 +1,7 @@
 package osp.leobert.android.kotlin_sample.diagram
 
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
+import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
 import java.util.*
 
 /**
@@ -19,14 +20,14 @@ abstract class SuperClz : SealedI {
 
 }
 
-@ClassDiagram
+@GenerateClassDiagram
 @DemoDiagram
 class Clz : SuperClz(), SealedI {
 
     val list: List<Enum> = listOf()
     val listOfList: ArrayList<List<Enum>> = arrayListOf()
-    val listOfArray:List<Array<C>> = arrayListOf()
-    val array:Array<C> = arrayOf()
+    val listOfArray: List<Array<C>> = arrayListOf()
+    val array: Array<C> = arrayOf()
 
     //代理类型目前尚未得到优雅的处理
 //    val wilcard: CWildcard<A, B> by lazy { CWildcard() }
@@ -63,14 +64,15 @@ class C
 //      this.a = a;
 //   }
 //}
-@ClassDiagram("AAA")
-enum class Enum(public val a: A?) {
+@DemoDiagram
+enum class Enum(val a: A?) {
     E1(null), E2(null)
 }
 
-@ClassDiagram("AAA")
+@DemoDiagram
 interface InterFace {
     companion object {
+        //        @JvmField 两种注解会改变编译的结果
         @JvmStatic
         val a: Enum? = null
     }
@@ -78,12 +80,16 @@ interface InterFace {
     val eInInterface: Enum?
 }
 
-@ClassDiagram("AAA")
+@DemoDiagram
 sealed interface SealedI : InterFace {}
 
+//@ClassDiagram(qualifier = "AAAB")
+//annotation class AAAB
 
-@ClassDiagram("AAAB")
-sealed class SealedClz {
+@GenerateClassDiagram
+//(annos = [AAAB::class])
+@AAAB
+sealed class SealedClz2 {
     fun m() {
         print(Enum.E1.a)
     }

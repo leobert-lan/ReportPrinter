@@ -11,12 +11,14 @@ import osp.leobert.android.reporter.diagram.core.Relation
 import osp.leobert.android.reporter.diagram.core.UmlElement
 import osp.leobert.android.reporter.diagram.core.UmlStub
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
+import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
 import osp.leobert.android.reportprinter.spi.Model
 import osp.leobert.android.reportprinter.spi.ReporterExtension
 import osp.leobert.android.reportprinter.spi.Result
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
+import javax.lang.model.type.TypeMirror
 
 @AutoService(ReporterExtension::class)
 /*skip lint warning!*/
@@ -30,14 +32,14 @@ class DiagramCompiler : ReporterExtension {
     private val diagramUmlElementCache = mutableMapOf<String, MutableSet<UmlElement>>()
 
     override fun applicableAnnotations(): MutableSet<String> {
-        return mutableSetOf(ClassDiagram::class.java.name)
+        return mutableSetOf(ClassDiagram::class.java.name, GenerateClassDiagram::class.java.name)
     }
 
     override fun generateReport(previousData: MutableMap<String, MutableList<Model>>?): Result {
 
         val notatedByDiagramNotations = filterNotation(previousData)
 
-        val candidates = previousData?.get(ClassDiagram::class.java.name)?.filter {
+        val candidates = previousData?.get(GenerateClassDiagram::class.java.name)?.filter {
             it.elementKind == ElementKind.INTERFACE || it.elementKind == ElementKind.CLASS || it.elementKind == ElementKind.ENUM
         }
 
@@ -93,7 +95,7 @@ class DiagramCompiler : ReporterExtension {
                 sb.append("'<")
                         .append(
                                 path.joinToString {
-                                    it.element?.nameRemovedPkg(it.name)?:it.name
+                                    it.element?.nameRemovedPkg(it.name) ?: it.name
                                 }
                         )
                         .append(">").append(RETURN)
@@ -114,7 +116,6 @@ class DiagramCompiler : ReporterExtension {
                                         sb.append(it).append(RETURN)
                                     }
                                 }
-
                             }
 
                         } catch (ignore: Exception) {
@@ -160,6 +161,18 @@ class DiagramCompiler : ReporterExtension {
             val diagram = if (it.element.hasAnnotationOf(qualifier.element)) {
                 findAnnotationByAnnotation(it.element.annotationMirrors, ClassDiagram::class.java)
             } else {
+                //fixme now it's must be null, cause ClassDiagram only notate at an annotation,consider custom node config and
+                // use config-bean when parse relation!
+
+//                    val nameOfGCD = GenerateClassDiagram::class.java.name
+//                    it.element.annotationMirrors?.find { am->
+//                        am.annotationType.toString() == nameOfGCD
+//                    }?.elementValues?.entries?.find { entry->
+//                        entry.key.simpleName.toString() == "annos"
+//                    }?.value?.value?.takeIfInstance<TypeMirror>()?.find { c->
+//                        c.name == qualifier.element.asType().toString()
+//                    }?.getAnnotation(ClassDiagram::class.java)?:
+
                 it.element.getAnnotation(ClassDiagram::class.java)
             } ?: return@forEach
 

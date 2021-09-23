@@ -45,6 +45,8 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
         if (vType.kind.isPrimitive) {
             return
         }
+        //todo the diagram is passed by the holder-class, but the variableElement may have a ClassDiagram or annotation notated by ClassDiagram
+        //consider the prefer
 
         val refers = variableElement.asType().fetchDeclaredType()
 
