@@ -13,7 +13,6 @@ import javax.lang.model.util.SimpleTypeVisitor6
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Utils </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2021/9/18.
  */
 object Utils {

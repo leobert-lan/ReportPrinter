@@ -11,7 +11,6 @@ import java.security.NoSuchAlgorithmException
  * <p><b>Package:</b> osp.leobert.android.kotlin_sample </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> KtMd5 </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2020/6/3.
  */
 class KtMd5 {

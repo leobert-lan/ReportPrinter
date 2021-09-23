@@ -7,7 +7,6 @@ import java.util.*
  * <p><b>Package:</b> osp.leobert.android.kotlin_sample.diagram </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Clz </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2021/9/18.
  */
 

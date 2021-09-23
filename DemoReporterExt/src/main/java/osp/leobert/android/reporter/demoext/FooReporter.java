@@ -15,7 +15,6 @@ import osp.leobert.android.reportprinter.spi.Result;
  * <p><b>Package:</b> osp.leobert.android.reporter.demoext </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> FooReporter </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2018/11/17.
  */
 @AutoService(ReporterExtension.class)

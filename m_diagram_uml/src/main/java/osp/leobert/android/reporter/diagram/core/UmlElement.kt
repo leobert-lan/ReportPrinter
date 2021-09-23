@@ -14,7 +14,6 @@ import javax.lang.model.util.ElementFilter
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram.core </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> UmlElement </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2021/9/18.
  */
 abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
@@ -151,11 +150,6 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
                 builder.append("  .. fields ..").append(RETURN)
             it.forEach { field ->
                 fieldDrawer.invokeDraw(builder, field, context)
-//                //todo 使用FieldDrawer this is a test
-//                builder.append("'").append(field.toString())
-//                        .append(":").append(field.asType().toString())
-//                        .append("//").append(field.asType().ifElement()?.simpleName)
-//                        .append(RETURN)
             }
         }
     }
@@ -226,12 +220,6 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
             builder.append("  .. fields ..").append(RETURN)
             it.forEach { field ->
                 fieldDrawer.invokeDraw(builder, field, context)
-//                //todo 使用FieldDrawer this is a test
-//                builder.append("'").append(field.toString())
-//                        .append(":").append(field.asType().toString())
-//                        .append("//").append(field.modifiers)
-//                        .append("//").append(field.asType().ifElement()?.simpleName)
-//                        .append(RETURN)
             }
         }
     }

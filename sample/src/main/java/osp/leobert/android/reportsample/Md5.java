@@ -18,7 +18,6 @@ import osp.leobert.android.utils.reporter.Util;
  * <p><b>Package:</b> osp.leobert.android.reportsample </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Md5 </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2020/6/3.
  */
 public class Md5 {

@@ -4,7 +4,6 @@ package osp.leobert.android.reporter.diagram.core
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram.core </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Relation </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2021/9/18.
  */
 enum class Relation(val type: Int) {

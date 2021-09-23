@@ -10,7 +10,6 @@ import osp.leobert.android.reporter.review.TODO
  * <p><b>Package:</b> osp.leobert.android.kotlin_sample </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> KtFoo </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2020/6/3.
  */
 @Demo(foo = "foo of demo notated at clz")

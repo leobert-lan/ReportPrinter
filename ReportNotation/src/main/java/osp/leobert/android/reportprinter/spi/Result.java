@@ -4,7 +4,6 @@ package osp.leobert.android.reportprinter.spi;
  * <p><b>Package:</b> osp.leobert.android.reportprinter.spi </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Result </p>
- * <p><b>Description:</b> TODO </p>
  * Created by leobert on 2018/11/17.
  */
 public class Result {
