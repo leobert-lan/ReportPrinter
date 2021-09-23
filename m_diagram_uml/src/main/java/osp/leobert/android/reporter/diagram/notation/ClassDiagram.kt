@@ -1,8 +1,5 @@
 package osp.leobert.android.reporter.diagram.notation
 
-import java.lang.annotation.Inherited
-import kotlin.reflect.KClass
-
 /**
  * Created by leobert on 2021/9/18.
  */
@@ -17,10 +14,6 @@ annotation class ClassDiagram(
         val methodVisible: Array<Visible> = [Visible.Private, Visible.Protected, Visible.Package, Visible.Public],
 
         )
-
-enum class Visible {
-    Private, Protected, Package, Public
-}
 
 // TODO: 2021/9/23 增加一个注解：config，仅可注解于注解，迁移原ClassDiagram ，增加一个 GenerateClassDiagram 的注解，用于标记需要生成关系树的关键节点
 //处理时，关心 "config" 和 "GenerateClassDiagram"

@@ -1,16 +1,11 @@
-package osp.leobert.android.reporter.diagram.notation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
+package osp.leobert.android.reporter.diagram.notation
 
 /**
- * <p><b>Package:</b> osp.leobert.android.reporter.diagram.notation </p>
- * <p><b>Project:</b> ReportPrinter </p>
- * <p><b>Classname:</b> GenerateClassDiagram </p>
- * <p><b>Description:</b> TODO </p>
+ * **Package:** osp.leobert.android.reporter.diagram.notation
+ * **Project:** ReportPrinter
+ * **Classname:** GenerateClassDiagram
  * Created by leobert on 2021/9/23.
  */
-@Target({ElementType.TYPE})
-public @interface GenerateClassDiagram {
-//    Class<? extends Annotation>[] annos() default {};
+@Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
+annotation class GenerateClassDiagram { //    Class<? extends Annotation>[] annos() default {};
 }

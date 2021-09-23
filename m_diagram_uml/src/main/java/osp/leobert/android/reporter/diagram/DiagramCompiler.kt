@@ -18,7 +18,6 @@ import osp.leobert.android.reportprinter.spi.Result
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
-import javax.lang.model.type.TypeMirror
 
 @AutoService(ReporterExtension::class)
 /*skip lint warning!*/
@@ -175,6 +174,8 @@ class DiagramCompiler : ReporterExtension {
 
                 it.element.getAnnotation(ClassDiagram::class.java)
             } ?: return@forEach
+
+//            groups.getOrPut(diagram.qualifier) { arrayListOf() }.add(diagram to it)
 
             groups.getOrDefault(diagram.qualifier, arrayListOf()).apply {
                 this.add(diagram to it)
