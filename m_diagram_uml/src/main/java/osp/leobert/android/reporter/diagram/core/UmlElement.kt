@@ -1,9 +1,9 @@
 package osp.leobert.android.reporter.diagram.core
 
 import osp.leobert.android.maat.dag.DAG
+import osp.leobert.android.reporter.diagram.Utils.fetchDeclaredType
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
-import osp.leobert.android.reporter.diagram.Utils.refersIfDeclaredType
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
@@ -47,22 +47,19 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
             return
         }
 
-        val e = variableElement.asType().ifElement()
-        //todo consider Collections(wildcard) and arrays!
+        val refers = variableElement.asType().fetchDeclaredType()
 
-
-        //1. handle wildcard
-        val refers = variableElement.asType().refersIfDeclaredType()
         if (!refers.isNullOrEmpty()) {
             refers.forEach { refer ->
                 refer.ifElement()?.let { ele ->
                     IUmlElementHandler.HandlerImpl.handle(from = this, relation = Relation.Dependency,
                             element = ele, diagram = diagram, graph = graph, cache = cache)
-
                 }
             }
             return
         }
+
+        val e = variableElement.asType().ifElement()
 
         //handle normal
         if (e != null) {

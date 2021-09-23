@@ -6,8 +6,8 @@ import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeMirror
+import javax.lang.model.type.*
+import javax.lang.model.util.SimpleTypeVisitor6
 
 /**
  * <p><b>Package:</b> osp.leobert.android.reporter.diagram </p>
@@ -18,20 +18,16 @@ import javax.lang.model.type.TypeMirror
  */
 object Utils {
 
-    fun preferedQulifier(notatedNotation: Element?, notation: ClassDiagram): String {
-        return notation.qualifier
-    }
-
     inline fun <reified R> Any?.takeIfInstance(): R? {
         if (this is R) return this
         return null
     }
 
-    fun Element?.nameRemovedPkg(ifNull:String): String {
+    fun Element?.nameRemovedPkg(ifNull: String): String {
         val fullName = this?.asType()?.toString() ?: ifNull
 
         var tmp = this?.enclosingElement
-        while (tmp!= null && tmp.kind!= ElementKind.PACKAGE) {
+        while (tmp != null && tmp.kind != ElementKind.PACKAGE) {
             tmp = tmp.enclosingElement
         }
 
@@ -48,18 +44,65 @@ object Utils {
         }
     }
 
-
-    fun TypeMirror.refersIfDeclaredType(): MutableSet<TypeMirror> {
-        val ret = linkedSetOf<TypeMirror>()
-        ret.add(this)
-        val typeParameters = this.takeIfInstance<DeclaredType>()?.typeArguments
-        if (!typeParameters.isNullOrEmpty()) {
-
-            typeParameters.forEach { typeParameter ->
-                ret.addAll(typeParameter.refersIfDeclaredType())
-            }
+    private abstract class CastingTypeVisitor<T> constructor(private val label: String) : SimpleTypeVisitor6<T, Void?>() {
+        override fun defaultAction(e: TypeMirror, v: Void?): T {
+            throw IllegalArgumentException("$e does not represent a $label")
         }
-        return ret
+    }
+
+    private class FetchClassTypeVisitor : CastingTypeVisitor<List<DeclaredType>>(label = "") {
+        override fun defaultAction(e: TypeMirror, v: Void?): List<DeclaredType> {
+            //ignore it
+            return emptyList()
+        }
+
+        override fun visitArray(t: ArrayType, p: Void?): List<DeclaredType> {
+            return t.componentType.accept(this, p)
+        }
+
+        override fun visitWildcard(t: WildcardType, p: Void?): List<DeclaredType> {
+            val ret = arrayListOf<DeclaredType>()
+
+            t.superBound?.let {
+                ret.addAll(it.accept(this, p))
+            }
+            t.extendsBound?.let {
+                ret.addAll(it.accept(this, p))
+            }
+            return ret
+        }
+
+        override fun visitDeclared(t: DeclaredType, p: Void?): List<DeclaredType> {
+            val ret = arrayListOf(t)
+            t.typeArguments?.forEach {
+                ret.addAll(it.accept(this, p))
+            }
+            return ret.toSet().toList()
+        }
+
+        override fun visitError(t: ErrorType, p: Void?): List<DeclaredType> {
+            return visitDeclared(t, p)
+        }
+
+        override fun visitTypeVariable(t: TypeVariable, p: Void?): List<DeclaredType> {
+            val ret = arrayListOf<DeclaredType>()
+
+            t.lowerBound?.let {
+                ret.addAll(it.accept(this, p))
+            }
+            t.upperBound?.let {
+                ret.addAll(it.accept(this, p))
+            }
+//            val trans = t.asElement().asType()
+//            if (trans != t) {
+//                ret.addAll(trans.accept(this, p))
+//            }
+            return ret
+        }
+    }
+
+    fun TypeMirror.fetchDeclaredType(): List<DeclaredType> {
+        return this.accept(FetchClassTypeVisitor(), null)
     }
 
     fun TypeMirror.ifElement(): Element? {

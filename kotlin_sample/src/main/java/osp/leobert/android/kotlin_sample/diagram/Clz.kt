@@ -23,18 +23,19 @@ abstract class SuperClz : SealedI {
 @ClassDiagram
 @DemoDiagram
 class Clz : SuperClz(), SealedI {
-//    var i: Int = 0
-//    var i2: Int? = null
 
-    val strs: List<Enum> = listOf()
-    val strs2: ArrayList<List<Enum>> = arrayListOf()
+    val list: List<Enum> = listOf()
+    val listOfList: ArrayList<List<Enum>> = arrayListOf()
+    val listOfArray:List<Array<C>> = arrayListOf()
+    val array:Array<C> = arrayOf()
 
     //代理类型目前尚未得到优雅的处理
 //    val wilcard: CWildcard<A, B> by lazy { CWildcard() }
 
     val wilcard2: CWildcard<A, B> = CWildcard()
 
-    val strName: Int? = null
+    val int: Int? = null
+
     override val eInInterface: Enum?
         get() = null
 }
@@ -45,6 +46,7 @@ class CWildcard<T, M> {
 
 class A
 class B
+class C
 
 //public enum Enum {
 //   E1,
