@@ -110,6 +110,10 @@ public class Result {
             return this;
         }
 
+        public ReportFileBuilder fileBuilder() {
+            return new ReportFileBuilder(this);
+        }
+
         @Deprecated
         public Builder reportContent(String val) {
             compactBuilder.reportContent(val);
@@ -136,7 +140,7 @@ public class Result {
         }
     }
 
-    private static class ReportFileBuilder {
+    public static class ReportFileBuilder {
         private String reportContent;
         private String reportFileNamePrefix;
         private String fileExt = "txt";

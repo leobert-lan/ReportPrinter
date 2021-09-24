@@ -61,7 +61,11 @@ class DiagramCompiler : ReporterExtension {
             "\"$removePkg\""
         }
 
+        val resultBuilder = Result.newBuilder().handled(true)
+
         groups.forEach { (qualifierName: String, u: MutableList<Pair<ClassDiagram, Model>>) ->
+
+            sb.clear()
 
             val graph = diagramGraphByGroup.getOrPut(qualifierName, {
                 DAG(nameOf = { it.name }, printChunkMax = 10)
@@ -92,12 +96,12 @@ class DiagramCompiler : ReporterExtension {
 
                 //todo debug info
                 sb.append("'<")
-                        .append(
-                                path.joinToString {
-                                    it.element?.nameRemovedPkg(it.name) ?: it.name
-                                }
-                        )
-                        .append(">").append(RETURN)
+                    .append(
+                        path.joinToString {
+                            it.element?.nameRemovedPkg(it.name) ?: it.name
+                        }
+                    )
+                    .append(">").append(RETURN)
 
                 path.forEachWindowSize2 { first: UmlElement, second: UmlElement ->
 
@@ -110,7 +114,7 @@ class DiagramCompiler : ReporterExtension {
                                     relationHasDraw.add(relationShip)
 
                                     relation.format(
-                                            first, second, nameGetter
+                                        first, second, nameGetter
                                     )?.let {
                                         sb.append(it).append(RETURN)
                                     }
@@ -124,23 +128,25 @@ class DiagramCompiler : ReporterExtension {
                 }
             }
             sb.append("@enduml").append(RETURN)
-        }
 
-        return Result.newBuilder().handled(true)
-                .reportFileNamePrefix("Diagram")
+            resultBuilder.fileBuilder()
+                .reportFileNamePrefix("${qualifierName}Diagram")
                 .reportContent(sb.toString())
                 .fileExt("puml")
                 .build()
+        }
+
+        return resultBuilder.build()
     }
 
     private fun handleUmlElement(model: Model, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
         IUmlElementHandler.HandlerImpl.handle(
-                from = UmlStub.sInstance,
-                relation = Relation.Stub,
-                element = model.element,
-                diagram = diagram,
-                graph = graph,
-                cache = cache
+            from = UmlStub.sInstance,
+            relation = Relation.Stub,
+            element = model.element,
+            diagram = diagram,
+            graph = graph,
+            cache = cache
         )
 
     }
@@ -152,8 +158,8 @@ class DiagramCompiler : ReporterExtension {
     }
 
     private fun handleGroup(
-            qualifier: Model,
-            candidates: List<Model>
+        qualifier: Model,
+        candidates: List<Model>
     ) {
 
         candidates.forEach {
@@ -191,14 +197,14 @@ class DiagramCompiler : ReporterExtension {
     }
 
     private inline fun <reified T : Annotation?> findAnnotationByAnnotation(
-            annotations: Collection<AnnotationMirror>,
-            clazz: Class<T>
+        annotations: Collection<AnnotationMirror>,
+        clazz: Class<T>
     ): T? {
         if (annotations.isEmpty()) return null // Save an iterator in the common case.
         for (mirror in annotations) {
             val target: Annotation? = mirror.annotationType
-                    .asElement()
-                    .getAnnotation(clazz)
+                .asElement()
+                .getAnnotation(clazz)
             if (target != null) {
                 return target.takeIfInstance<T>()
             }
