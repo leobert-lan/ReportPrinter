@@ -1,5 +1,10 @@
 package osp.leobert.android.reportprinter.spi;
 
+
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * <p><b>Package:</b> osp.leobert.android.reportprinter.spi </p>
  * <p><b>Project:</b> ReportPrinter </p>
@@ -7,32 +12,78 @@ package osp.leobert.android.reportprinter.spi;
  * Created by leobert on 2018/11/17.
  */
 public class Result {
+
+    public static class ResultFile {
+        private final String reportContent;
+        private final String reportFileNamePrefix;
+        private final String fileExt;
+
+        public ResultFile(String reportContent, String reportFileNamePrefix, String fileExt) {
+            this.reportContent = reportContent;
+            this.reportFileNamePrefix = reportFileNamePrefix;
+            this.fileExt = fileExt;
+        }
+
+        public String getReportContent() {
+            return reportContent;
+        }
+
+        public String getReportFileNamePrefix() {
+            return reportFileNamePrefix;
+        }
+
+        public String getFileExt() {
+            return fileExt;
+        }
+    }
+
     private final boolean handled;
-    private final String reportContent;
-    private final String reportFileNamePrefix;
-    private final String fileExt;
+
+    @Deprecated
+    private final ResultFile compactFile;
+
+    private final List<ResultFile> files;
+
+    public ResultFile getCompactFile() {
+        return compactFile;
+    }
 
     public boolean isHandled() {
         return handled;
     }
 
+    @Deprecated
     public String getReportContent() {
-        return reportContent;
+        if (compactFile!=null)
+            return compactFile.reportContent;
+        return null;
     }
 
+    @Deprecated
     public String getReportFileNamePrefix() {
-        return reportFileNamePrefix;
+        if (compactFile!=null)
+            return compactFile.reportFileNamePrefix;
+        return null;
     }
 
+    @Deprecated
     public String getFileExt() {
-        return fileExt;
+        if (compactFile!=null)
+            return compactFile.fileExt;
+        return null;
+    }
+
+    public List<ResultFile> getFiles() {
+        return files;
     }
 
     private Result(Builder builder) {
         handled = builder.handled;
-        reportContent = builder.reportContent;
-        reportFileNamePrefix = builder.reportFileNamePrefix;
-        fileExt = builder.fileExt;
+        compactFile = builder.compactBuilderHasSet ? new ResultFile(builder.compactBuilder.reportContent,
+                builder.compactBuilder.reportFileNamePrefix,
+                builder.compactBuilder.fileExt) : null;
+
+        files = builder.files;
     }
 
     public static Builder newBuilder() {
@@ -42,9 +93,14 @@ public class Result {
 
     public static final class Builder {
         private boolean handled;
-        private String reportContent;
-        private String reportFileNamePrefix;
-        private String fileExt = "txt";
+
+        @Deprecated
+        private final ReportFileBuilder compactBuilder = new ReportFileBuilder(this);
+
+        @Deprecated
+        private boolean compactBuilderHasSet = false;
+
+        private final List<ResultFile> files = new ArrayList<>();
 
         private Builder() {
         }
@@ -54,23 +110,63 @@ public class Result {
             return this;
         }
 
+        @Deprecated
         public Builder reportContent(String val) {
-            reportContent = val;
+            compactBuilder.reportContent(val);
+            compactBuilderHasSet = true;
             return this;
         }
 
+        @Deprecated
         public Builder reportFileNamePrefix(String val) {
-            reportFileNamePrefix = val;
+            compactBuilder.reportFileNamePrefix(val);
+            compactBuilderHasSet = true;
             return this;
         }
 
+        @Deprecated
         public Builder fileExt(String val) {
-            fileExt = val;
+            compactBuilder.fileExt(val);
+            compactBuilderHasSet = true;
             return this;
         }
 
         public Result build() {
             return new Result(this);
         }
+    }
+
+    private static class ReportFileBuilder {
+        private String reportContent;
+        private String reportFileNamePrefix;
+        private String fileExt = "txt";
+
+        private final Builder builder;
+
+        public ReportFileBuilder(Builder builder) {
+            this.builder = builder;
+        }
+
+        public ReportFileBuilder reportContent(String val) {
+            reportContent = val;
+            return this;
+        }
+
+        public ReportFileBuilder reportFileNamePrefix(String val) {
+            reportFileNamePrefix = val;
+            return this;
+        }
+
+        public ReportFileBuilder fileExt(String val) {
+            fileExt = val;
+            return this;
+        }
+
+        public Builder build() {
+            ResultFile file = new ResultFile(reportContent, reportFileNamePrefix, fileExt);
+            builder.files.add(file);
+            return builder;
+        }
+
     }
 }

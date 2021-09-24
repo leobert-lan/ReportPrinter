@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -230,10 +231,21 @@ public class ReportProcessor extends AbstractProcessor {
     }
 
     private void generateReport(Result result) {
-        String fileName = Utils.generateReportFilePath(module + result.getReportFileNamePrefix(), result.getFileExt());
+
+        Result.ResultFile compactFile = result.getCompactFile();
+
+        if (compactFile!= null) {
+            generateReport(compactFile);
+        }
+
+        result.getFiles().forEach(this::generateReport);
+    }
+
+    private void generateReport(Result.ResultFile file) {
+        String fileName = Utils.generateReportFilePath(module + file.getReportFileNamePrefix(), file.getFileExt());
         logger.info("generate " + fileName);
         if (Utils.createFile(fileName)) {
-            Utils.writeStringToFile(fileName, result.getReportContent(), false);
+            Utils.writeStringToFile(fileName, file.getReportContent(), false);
             logger.info("generate success");
         } else {
             logger.info("generate failure");
