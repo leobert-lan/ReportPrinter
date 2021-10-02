@@ -89,7 +89,6 @@ sealed interface SealedI : InterFace {}
 //annotation class AAAB
 
 @GenerateClassDiagram
-//(annos = [AAAB::class])
 @AAAB
 sealed class SealedClz2 {
     fun m() {

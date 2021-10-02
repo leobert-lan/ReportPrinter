@@ -24,14 +24,14 @@ enum class Relation(val type: Int) {
     //泛化（Generalization）,
     Generalization(2) {
         override fun <T> format(first: T, second: T, nameGetter: (T) -> String): String {
-            return "${nameGetter(first)} --|> ${nameGetter(second)}"
+            return "${nameGetter(second)} <|-- ${nameGetter(first)}"
         }
     },
 
     // 实现（Realization），
     Realization(3) {
         override fun <T> format(first: T, second: T, nameGetter: (T) -> String): String {
-            return "${nameGetter(first)} ..|> ${nameGetter(second)}"
+            return "${nameGetter(second)} <|.. ${nameGetter(first)}"
         }
     },
 

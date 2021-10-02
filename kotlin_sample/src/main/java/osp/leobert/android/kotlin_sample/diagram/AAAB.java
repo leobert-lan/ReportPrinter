@@ -19,6 +19,7 @@ public @interface AAAB {
 }
 
 @GenerateClassDiagram
+@AAAB
 class SealedClz {
     private int a;
 
