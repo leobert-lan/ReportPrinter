@@ -3,6 +3,7 @@ package osp.leobert.android.reporter.diagram.core
 import com.sun.tools.javac.code.Type
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
+import osp.leobert.android.reporter.diagram.notation.Visible
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 
@@ -55,17 +56,17 @@ interface IJavaxElementDrawer {
     fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>)
 }
 
-enum class ModifierDrawer(private val modifier: Modifier, private val mark: String) : IJavaxElementDrawer {
-    Private(Modifier.PRIVATE, "-"),
-    Protected(Modifier.PROTECTED, "#"),
-    Public(Modifier.PUBLIC, "+"),
-    Package(Modifier.DEFAULT, "~"),
+enum class ModifierDrawer(private val matcher: IModifierMatcher, private val mark: String) : IJavaxElementDrawer {
+    Private(Visible.Private, "-"),
+    Protected(Visible.Protected, "#"),
+    Public(Visible.Public, "+"),
+    Package(Visible.Package, "~"),
 
-    Static(Modifier.STATIC, "{static}"),
-    Abstract(Modifier.ABSTRACT, "{abstract}");
+    Static(IModifierMatcher.Companion.Static, "{static}"),
+    Abstract(IModifierMatcher.Companion.Abstract, "{abstract}");
 
     override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
-        if (element.modifiers?.contains(modifier) == true)
+        if (matcher.match(element))
             builder.append(mark)
     }
 }
@@ -136,10 +137,6 @@ object MethodSignatureDrawer : IJavaxElementDrawer {
             }
 
             builder.append(info)
-
-//            if (tmp.thrown.isNotEmpty()) {
-//                builder.append(" throws ")
-//            }
         }
     }
 }

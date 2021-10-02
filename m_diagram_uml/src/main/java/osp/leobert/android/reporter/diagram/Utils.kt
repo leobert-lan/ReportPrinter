@@ -92,10 +92,6 @@ object Utils {
             t.upperBound?.let {
                 ret.addAll(it.accept(this, p))
             }
-//            val trans = t.asElement().asType()
-//            if (trans != t) {
-//                ret.addAll(trans.accept(this, p))
-//            }
             return ret
         }
     }
@@ -118,6 +114,11 @@ object Utils {
 
 //        todo diagram config parse
         return false
+    }
+
+    fun shouldFieldIgnore():Boolean {
+
+        return true
     }
 
     inline fun <T> List<T>.forEachWindowSize2(consumer: (first: T, second: T) -> Unit) {

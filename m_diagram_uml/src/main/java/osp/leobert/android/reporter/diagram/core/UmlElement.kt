@@ -46,7 +46,6 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
             return
         }
         //todo the diagram is passed by the holder-class, but the variableElement may have a ClassDiagram or annotation notated by ClassDiagram
-        //consider the prefer
 
         val refers = variableElement.asType().fetchDeclaredType()
 
@@ -131,17 +130,28 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
         val tElement = element.ifTypeElement() ?: return
 
+        val fieldVisible = diagram.fieldVisible
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
-        mFields.addAll(fields)
+        mFields.addAll(
+                fields.filter { e ->
+                    fieldVisible.find { it.match(e) } != null
+                }
+        )
 
         fields.forEach {
             handleDependencyViaField(it, diagram, graph, cache)
         }
 
+        val methodVisible = diagram.methodVisible
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
+
         mMethods.clear()
-        mMethods.addAll(methods)
+        mMethods.addAll(
+                methods.filter { e ->
+                    methodVisible.find { it.match(e) } != null
+                }
+        )
 
 
     }

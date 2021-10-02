@@ -36,6 +36,8 @@ class Clz : SuperClz(), SealedI {
 
     val int: Int? = null
 
+    internal val d: D? = null
+
     override val eInInterface: Enum?
         get() = null
 }
