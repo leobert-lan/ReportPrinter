@@ -3,7 +3,7 @@ plugins {
     id 'kotlin'
 }
 apply plugin: 'kotlin-kapt'
-//apply plugin: 'osp.leobert.maven.publish'
+apply plugin: 'osp.leobert.maven.publish'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -18,4 +18,34 @@ dependencies {
     kapt 'com.google.auto.service:auto-service:1.0-rc4'
     implementation 'com.google.auto.service:auto-service:1.0-rc4'
     implementation 'androidx.annotation:annotation:1.2.0'
+}
+
+
+
+EasyPublish {
+    sourceSet = sourceSets.main.java.srcDirs
+    
+    artifact {
+        value = "build/libs/m_diagram_uml.jar"
+    }
+
+    description = "generate report for Class Diagram"
+
+    developer {
+        id = "leobert"
+        name = "leobert"
+        email = "leobert.l@hotmail.com"
+    }
+
+    groupId = "io.github.leobert-lan"
+    artifactId = "reporter-util"
+    version = "1.0.0"
+    packaging = "jar"
+    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
+    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
+    licenseName = "MIT"
+    licenseUrl = "https://opensource.org/licenses/mit-license.html"
+    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
+
+    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
 }
