@@ -111,6 +111,8 @@ object Utils {
     fun shouldIgnoreEmlElement(element: Element, diagram: ClassDiagram): Boolean {
         if (element !is TypeElement) return true
         if (element.qualifiedName.toString().startsWith("java.")) return true
+        if (element.qualifiedName.toString().startsWith("android.")) return true
+        if (element.qualifiedName.toString().startsWith("androidx.")) return true
 
 //        todo diagram config parse
         return false

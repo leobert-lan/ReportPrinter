@@ -76,3 +76,4 @@ fastlane/readme.md
 ReportPrinter/gradle
 /gradle/wrapper/gradle-wrapper.jar
 /kotlin_sample/Reports/
+/Reports/

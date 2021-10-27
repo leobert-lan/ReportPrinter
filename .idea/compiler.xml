@@ -19,9 +19,6 @@
         <module name="ReportPrinter.report-anno-compiler" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
-      <module name="ReportPrinter.kotlin_sample" target="11" />
-      <module name="ReportPrinter.sample" target="11" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>
