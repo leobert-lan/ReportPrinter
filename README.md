@@ -10,9 +10,11 @@
 
 ## 可直接获取的功能
 
+核心注解处理器：
 *<img src="https://img.shields.io/static/v1?label=MavenCentray&message=report-anno-compiler"/>
 *[<img src="https://img.shields.io/maven-central/v/io.github.leobert-lan/report-anno-compiler.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:io.github.leobert-lan%20And%20a:report-anno-compiler)
 
+类图生成器，注解&注解处理器插件
 *<img src="https://img.shields.io/static/v1?label=MavenCentray&message=class-diagram-reporter"/>
 *[<img src="https://img.shields.io/maven-central/v/io.github.leobert-lan/class-diagram-reporter.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:io.github.leobert-lan%20And%20a:class-diagram-reporter)
 
