@@ -11,7 +11,7 @@ import java.util.*
  * Created by leobert on 2021/9/18.
  */
 
-@ClassDiagram("AAA")
+@ClassDiagram("Demo")
 annotation class DemoDiagram
 
 @DemoDiagram
