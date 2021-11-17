@@ -8,18 +8,30 @@
 * 将注解和被注解的信息给到自定义部分处理
 * 将自定义处理的结果生成文档
 
+本项目有两种使用方式：
+
+* 使用核心注解处理器+已经存在的功能扩展，例如UML类图扩展
+* 使用核心注解处理器+自定义功能扩展
+
+## 可以快速获得的支持
+
+* [核心注解处理器及其插件扩展的设计思路](https://blog.csdn.net/a774057695/article/details/106603455)
+* [类图工具设计介绍和使用](https://juejin.cn/post/7025235961801867278)
+* [使用中的一些问题](https://github.com/leobert-lan/ReportPrinter/issues?q=is%3Aissue+is%3Aclosed) ，检索相关内容
+* [实在没辙了可以这样](https://github.com/leobert-lan/ReportPrinter/issues/new)
+
 ## 可直接获取的功能
 
 核心注解处理器：
-*<img src="https://img.shields.io/static/v1?label=MavenCentray&message=report-anno-compiler"/>
-*[<img src="https://img.shields.io/maven-central/v/io.github.leobert-lan/report-anno-compiler.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:io.github.leobert-lan%20And%20a:report-anno-compiler)
+<img src="https://img.shields.io/static/v1?label=MavenCentray&message=report-anno-compiler"/>
+[<img src="https://img.shields.io/maven-central/v/io.github.leobert-lan/report-anno-compiler.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:io.github.leobert-lan%20And%20a:report-anno-compiler)
 
 类图生成器，注解&注解处理器插件
-*<img src="https://img.shields.io/static/v1?label=MavenCentray&message=class-diagram-reporter"/>
-*[<img src="https://img.shields.io/maven-central/v/io.github.leobert-lan/class-diagram-reporter.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:io.github.leobert-lan%20And%20a:class-diagram-reporter)
+<img src="https://img.shields.io/static/v1?label=MavenCentray&message=class-diagram-reporter"/>
+[<img src="https://img.shields.io/maven-central/v/io.github.leobert-lan/class-diagram-reporter.svg?label=latest%20release"/>](https://search.maven.org/search?q=g:io.github.leobert-lan%20And%20a:class-diagram-reporter)
 
 
-## 如何使用：
+## 如何自定义功能扩展并使用：
 
 
 ### 自定义注解和处理逻辑
@@ -177,3 +189,5 @@ foo:foo of demo notated at field
 ```
 
 当然，这还只是一个非常简单的例子，使用者可以在注解处理时、将内容编辑为MarkDown或者Html，甚至利用更加复杂的注解完成有趣的事情（例如：基于plantuml，生成流程图、类图）
+    
+现在，我们已经拥有类图插件了！    
