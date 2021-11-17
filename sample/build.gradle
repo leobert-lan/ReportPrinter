@@ -42,27 +42,30 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.3.0'
 
-    implementation project(':DemoReporterExt')
-//    implementation project(':utils_reporter')
-    implementation "io.github.leobert-lan:reporter-util:1.0.0"
-
-//    annotationProcessor project(':report-anno-compiler')
-    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.3"
-
-    annotationProcessor project(":DemoReporterExt")
-//    annotationProcessor project(":utils_reporter")
-    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
-
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':kotlin_sample')
+
+    //核心注解处理器
+//    annotationProcessor project(':report-anno-compiler')
+    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
+
+    // 这里偷懒把注解和注解处理器扩展放在了一起，所以既有 implementation 也有 annotation-Processor
+
+    //处理器扩展--样例
+    annotationProcessor project(":DemoReporterExt")
+    implementation project(':DemoReporterExt')
+
+    //处理器扩展--util-report
+    //    annotationProcessor project(":utils_reporter")
+    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
+    //util-report 注解,
+    //    implementation project(':utils_reporter')
+    implementation "io.github.leobert-lan:reporter-util:1.0.0"
+
+
+
+    implementation project(":m_diagram_uml")
+    annotationProcessor project(":m_diagram_uml")
+
+
 }
-//
-//task wrapper4_4(type: Wrapper) {
-//    gradleVersion = '4.4'
-//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-//}
-//
-//task wrapper5_1_1(type: Wrapper) {
-//    gradleVersion = '5.1.1'
-//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-//}
