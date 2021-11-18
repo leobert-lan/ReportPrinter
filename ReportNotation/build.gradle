@@ -3,9 +3,6 @@ apply plugin: 'osp.leobert.maven.publish'
 
 
 dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    api 'com.google.auto.service:auto-service:1.0-rc4'
-//    api "com.uber.javaxextras:javax-extras:0.1.0"
 }
 
 sourceCompatibility = "1.8"
@@ -14,10 +11,6 @@ targetCompatibility = "1.8"
 
 EasyPublish {
     sourceSet = sourceSets.main.java.srcDirs
-//    //    notStandardJavaComponent = false
-//
-//    docExcludes = arrayListOf("osp/leobert/android/davinci/*")
-//
     artifact {
         value = "build/libs/ReportNotation.jar"
     }
