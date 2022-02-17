@@ -4,7 +4,7 @@ import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.graph.Edge
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
-import osp.leobert.android.reporter.diagram.Utils.shouldIgnoreEmlElement
+import osp.leobert.android.reporter.diagram.Utils.shouldIgnoreUmlElement
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -32,7 +32,7 @@ sealed interface IUmlElementHandler {
             graph: DAG<UmlElement>,
             cache: MutableSet<UmlElement>
         ) {
-            if (shouldIgnoreEmlElement(element, diagram)) return
+            if (shouldIgnoreUmlElement(element, diagram)) return
 
             //1. model.element to UmlElement
             val cur = UmlClass(diagram, element)
@@ -88,7 +88,7 @@ sealed interface IUmlElementHandler {
             graph: DAG<UmlElement>,
             cache: MutableSet<UmlElement>
         ) {
-            if (shouldIgnoreEmlElement(element, diagram)) return
+            if (shouldIgnoreUmlElement(element, diagram)) return
 
             //1. model.element to UmlElement
             val cur = UmlEnum(diagram, element)
@@ -132,7 +132,7 @@ sealed interface IUmlElementHandler {
             graph: DAG<UmlElement>,
             cache: MutableSet<UmlElement>
         ) {
-            if (shouldIgnoreEmlElement(element, diagram)) return
+            if (shouldIgnoreUmlElement(element, diagram)) return
 
             //1. model.element to UmlElement
             val cur = UmlInterface(diagram, element)
@@ -181,11 +181,23 @@ sealed interface IUmlElementHandler {
             graph: DAG<UmlElement>,
             cache: MutableSet<UmlElement>
         ) {
-            if (shouldIgnoreEmlElement(element, diagram)) return
+            if (shouldIgnoreUmlElement(element, diagram)) return
 
             strategy[element.kind]?.handle(
                     from, relation, element, diagram, graph, cache
             )
         }
+    }
+
+    object ClassDiagramConfig {
+
+        private val clzIgnoranceConfig:MutableMap<ClassDiagram,ClzIgnorance> = mutableMapOf()
+
+        fun getIgnorance(diagram: ClassDiagram): ClzIgnorance {
+          return  clzIgnoranceConfig.getOrPut(diagram) {
+                ClzIgnorance(diagram.ignore)
+            }
+        }
+
     }
 }

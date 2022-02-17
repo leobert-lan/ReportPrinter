@@ -2,6 +2,7 @@ package osp.leobert.android.reporter.diagram
 
 import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
+import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -108,20 +109,23 @@ object Utils {
         }
     }
 
-    fun shouldIgnoreEmlElement(element: Element, diagram: ClassDiagram): Boolean {
+    fun shouldIgnoreUmlElement(element: Element, diagram: ClassDiagram): Boolean {
         if (element !is TypeElement) return true
         if (element.qualifiedName.toString().startsWith("java.")) return true
         if (element.qualifiedName.toString().startsWith("android.")) return true
         if (element.qualifiedName.toString().startsWith("androidx.")) return true
 
-//        todo diagram config parse
+        if (IUmlElementHandler.ClassDiagramConfig.getIgnorance(diagram).isIgnored(element)) {
+            return true
+        }
+
         return false
     }
 
-    fun shouldFieldIgnore():Boolean {
-
-        return true
-    }
+//    fun shouldFieldIgnore():Boolean {
+//
+//        return true
+//    }
 
     inline fun <T> List<T>.forEachWindowSize2(consumer: (first: T, second: T) -> Unit) {
         if (this.size < 2) return
