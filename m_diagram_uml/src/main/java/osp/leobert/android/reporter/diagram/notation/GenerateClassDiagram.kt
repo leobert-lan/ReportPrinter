@@ -7,5 +7,5 @@ package osp.leobert.android.reporter.diagram.notation
  * Created by leobert on 2021/9/23.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.CLASS)
-annotation class GenerateClassDiagram { //    Class<? extends Annotation>[] annos() default {};
+annotation class GenerateClassDiagram {
 }

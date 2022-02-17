@@ -1,6 +1,6 @@
 package osp.leobert.android.reporter.diagram.core
 
-import osp.leobert.android.maat.dag.DAG
+import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.fetchDeclaredType
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement

@@ -1,7 +1,7 @@
 package osp.leobert.android.reporter.diagram.core
 
-import osp.leobert.android.maat.dag.DAG
-import osp.leobert.android.maat.dag.Edge
+import osp.leobert.android.reporter.diagram.graph.DAG
+import osp.leobert.android.reporter.diagram.graph.Edge
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
 import osp.leobert.android.reporter.diagram.Utils.shouldIgnoreEmlElement
@@ -15,22 +15,22 @@ import javax.lang.model.element.ElementKind
 sealed interface IUmlElementHandler {
 
     fun handle(
+        from: UmlElement,
+        relation: Relation,
+        element: Element,
+        diagram: ClassDiagram,
+        graph: DAG<UmlElement>,
+        cache: MutableSet<UmlElement>
+    )
+
+    object ClzHandler : IUmlElementHandler {
+        override fun handle(
             from: UmlElement,
             relation: Relation,
             element: Element,
             diagram: ClassDiagram,
             graph: DAG<UmlElement>,
             cache: MutableSet<UmlElement>
-    )
-
-    object ClzHandler : IUmlElementHandler {
-        override fun handle(
-                from: UmlElement,
-                relation: Relation,
-                element: Element,
-                diagram: ClassDiagram,
-                graph: DAG<UmlElement>,
-                cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
@@ -81,12 +81,12 @@ sealed interface IUmlElementHandler {
 
     object EnumHandler : IUmlElementHandler {
         override fun handle(
-                from: UmlElement,
-                relation: Relation,
-                element: Element,
-                diagram: ClassDiagram,
-                graph: DAG<UmlElement>,
-                cache: MutableSet<UmlElement>
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
@@ -125,12 +125,12 @@ sealed interface IUmlElementHandler {
 
     object InterfaceHandler : IUmlElementHandler {
         override fun handle(
-                from: UmlElement,
-                relation: Relation,
-                element: Element,
-                diagram: ClassDiagram,
-                graph: DAG<UmlElement>,
-                cache: MutableSet<UmlElement>
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 
@@ -174,12 +174,12 @@ sealed interface IUmlElementHandler {
         )
 
         override fun handle(
-                from: UmlElement,
-                relation: Relation,
-                element: Element,
-                diagram: ClassDiagram,
-                graph: DAG<UmlElement>,
-                cache: MutableSet<UmlElement>
+            from: UmlElement,
+            relation: Relation,
+            element: Element,
+            diagram: ClassDiagram,
+            graph: DAG<UmlElement>,
+            cache: MutableSet<UmlElement>
         ) {
             if (shouldIgnoreEmlElement(element, diagram)) return
 

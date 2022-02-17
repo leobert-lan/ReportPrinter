@@ -1,4 +1,4 @@
-package osp.leobert.android.maat.dag
+package osp.leobert.android.reporter.diagram.graph
 
 import java.util.*
 import kotlin.collections.HashMap

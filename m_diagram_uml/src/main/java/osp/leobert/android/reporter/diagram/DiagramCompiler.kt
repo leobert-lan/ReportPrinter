@@ -2,7 +2,7 @@ package osp.leobert.android.reporter.diagram
 
 import androidx.annotation.RequiresApi
 import com.google.auto.service.AutoService
-import osp.leobert.android.maat.dag.DAG
+import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
