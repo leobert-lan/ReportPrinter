@@ -195,3 +195,38 @@ foo:foo of demo notated at field
 当然，这还只是一个非常简单的例子，使用者可以在注解处理时、将内容编辑为MarkDown或者Html，甚至利用更加复杂的注解完成有趣的事情（例如：基于plantuml，生成流程图、类图）
     
 现在，我们已经拥有类图插件了！    
+
+## License
+<details>
+<summray>
+MIT License Copyright (c) 2018 leobert-lan, see details
+</summary>
+
+```
+MIT License
+ 
+Copyright (c) 2018 leobert-lan
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+</details>
+
+
+
+
