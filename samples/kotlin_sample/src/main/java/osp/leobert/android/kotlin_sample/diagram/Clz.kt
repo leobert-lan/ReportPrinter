@@ -50,22 +50,6 @@ class A
 class B
 class C
 
-//public enum Enum {
-//   E1,
-//   E2;
-//
-//   @Nullable
-//   private final A a;
-//
-//   @Nullable
-//   public final A getA() {
-//      return this.a;
-//   }
-//
-//   private Enum(A a) {
-//      this.a = a;
-//   }
-//}
 @DemoDiagram
 enum class Enum(val a: A?) {
     E1(null), E2(null)

@@ -111,11 +111,16 @@ object Utils {
 
     fun shouldIgnoreUmlElement(element: Element, diagram: ClassDiagram): Boolean {
         if (element !is TypeElement) return true
+
+        val clzIgnorance = IUmlElementHandler.ClassDiagramConfig.getIgnorance(diagram)
+
+        if (clzIgnorance.isIgnoreExclude(element)) return false
+
         if (element.qualifiedName.toString().startsWith("java.")) return true
         if (element.qualifiedName.toString().startsWith("android.")) return true
         if (element.qualifiedName.toString().startsWith("androidx.")) return true
 
-        if (IUmlElementHandler.ClassDiagramConfig.getIgnorance(diagram).isIgnored(element)) {
+        if (clzIgnorance.isIgnored(element)) {
             return true
         }
 

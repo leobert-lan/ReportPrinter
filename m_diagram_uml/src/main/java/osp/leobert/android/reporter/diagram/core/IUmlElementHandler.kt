@@ -1,10 +1,10 @@
 package osp.leobert.android.reporter.diagram.core
 
-import osp.leobert.android.reporter.diagram.graph.DAG
-import osp.leobert.android.reporter.diagram.graph.Edge
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
 import osp.leobert.android.reporter.diagram.Utils.shouldIgnoreUmlElement
+import osp.leobert.android.reporter.diagram.graph.DAG
+import osp.leobert.android.reporter.diagram.graph.Edge
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -49,12 +49,12 @@ sealed interface IUmlElementHandler {
             element.ifTypeElement()?.superclass?.let {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                            cur,
-                            Relation.Generalization,
-                            e,
-                            diagram,
-                            graph,
-                            cache
+                        cur,
+                        Relation.Generalization,
+                        e,
+                        diagram,
+                        graph,
+                        cache
                     )
                 }
             }
@@ -64,12 +64,12 @@ sealed interface IUmlElementHandler {
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                            cur,
-                            Relation.Realization,
-                            e,
-                            diagram,
-                            graph,
-                            cache
+                        cur,
+                        Relation.Realization,
+                        e,
+                        diagram,
+                        graph,
+                        cache
                     )
                 }
 
@@ -108,12 +108,12 @@ sealed interface IUmlElementHandler {
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                            cur,
-                            Relation.Realization,
-                            e,
-                            diagram,
-                            graph,
-                            cache
+                        cur,
+                        Relation.Realization,
+                        e,
+                        diagram,
+                        graph,
+                        cache
                     )
                 }
             }
@@ -152,12 +152,12 @@ sealed interface IUmlElementHandler {
             interfaces?.forEach {
                 it.ifElement()?.let { e ->
                     HandlerImpl.handle(
-                            cur,
-                            Relation.Realization,
-                            e,
-                            diagram,
-                            graph,
-                            cache
+                        cur,
+                        Relation.Realization,
+                        e,
+                        diagram,
+                        graph,
+                        cache
                     )
                 }
             }
@@ -168,9 +168,9 @@ sealed interface IUmlElementHandler {
 
     object HandlerImpl : IUmlElementHandler {
         private val strategy = mapOf(
-                ElementKind.ENUM to EnumHandler,
-                ElementKind.CLASS to ClzHandler,
-                ElementKind.INTERFACE to InterfaceHandler
+            ElementKind.ENUM to EnumHandler,
+            ElementKind.CLASS to ClzHandler,
+            ElementKind.INTERFACE to InterfaceHandler
         )
 
         override fun handle(
@@ -184,18 +184,18 @@ sealed interface IUmlElementHandler {
             if (shouldIgnoreUmlElement(element, diagram)) return
 
             strategy[element.kind]?.handle(
-                    from, relation, element, diagram, graph, cache
+                from, relation, element, diagram, graph, cache
             )
         }
     }
 
     object ClassDiagramConfig {
 
-        private val clzIgnoranceConfig:MutableMap<ClassDiagram,ClzIgnorance> = mutableMapOf()
+        private val clzIgnoranceConfig: MutableMap<ClassDiagram, ClzIgnorance> = mutableMapOf()
 
         fun getIgnorance(diagram: ClassDiagram): ClzIgnorance {
-          return  clzIgnoranceConfig.getOrPut(diagram) {
-                ClzIgnorance(diagram.ignore)
+            return clzIgnoranceConfig.getOrPut(diagram) {
+                ClzIgnorance(diagram.ignore, diagram.ignoreExclude)
             }
         }
 

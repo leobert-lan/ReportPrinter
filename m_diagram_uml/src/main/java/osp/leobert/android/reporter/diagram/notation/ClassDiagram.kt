@@ -13,5 +13,8 @@ constructor(
     val qualifier: String = "",
     val fieldVisible: Array<Visible> = [Visible.Private, Visible.Protected, Visible.Package, Visible.Public],
     val methodVisible: Array<Visible> = [Visible.Private, Visible.Protected, Visible.Package, Visible.Public],
-    val ignore: Array<String> = []
+    val ignore: Array<String> = [],
+    val ignoreExclude: IgnoreExclude = IgnoreExclude()
 )
+
+// TODO: add ignoreExclude 2022-09-19 19:17:22
