@@ -9,6 +9,7 @@ import javax.lang.model.element.Modifier
 
 const val RETURN = "\r\n"
 
+// TODO: #5 consider if not using jdk1.8, how to deal with com.sun.tools.javac.code.Type??
 interface IElementDrawer {
     fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>)
 }
@@ -78,7 +79,6 @@ object FieldNameDrawer : IJavaxElementDrawer {
 }
 
 object FieldTypeDrawer : IJavaxElementDrawer {
-    //todo 目前全类名太长了，可以适当考虑简化，因为类的依赖已经有了，所以可以从中找出替换，但是需要补充参数！
     override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
 
         var name = element.nameRemovedPkg(element.asType().toString())
@@ -155,7 +155,6 @@ object MethodDrawer : IElementDrawer {
     )
 
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
-//        builder.append("'Test:MethodDrawer").append(RETURN)
         element.drawMethod(this, builder, context)
     }
 
