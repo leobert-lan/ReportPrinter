@@ -1,15 +1,14 @@
 package osp.leobert.android.reporter.diagram.core
 
-import com.sun.tools.javac.code.Type
+import osp.leobert.android.reporter.diagram.Utils.ifElement
+import osp.leobert.android.reporter.diagram.Utils.ifExecutable
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
-import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.notation.Visible
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
 
 const val RETURN = "\r\n"
 
-// TODO: #5 consider if not using jdk1.8, how to deal with com.sun.tools.javac.code.Type??
 interface IElementDrawer {
     fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>)
 }
@@ -97,15 +96,15 @@ object FieldTypeDrawer : IJavaxElementDrawer {
 
 object FieldDrawer : IElementDrawer {
     private val drawer: List<IJavaxElementDrawer> = arrayListOf(
-            object : IJavaxElementDrawer {
-                override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
-                    builder.append("  {field}")
-                }
-            },
-            //modifiers
-            ModifierDrawer.Static, ModifierDrawer.Abstract,
-            ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
-            FieldNameDrawer, FieldTypeDrawer
+        object : IJavaxElementDrawer {
+            override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+                builder.append("  {field}")
+            }
+        },
+        //modifiers
+        ModifierDrawer.Static, ModifierDrawer.Abstract,
+        ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
+        FieldNameDrawer, FieldTypeDrawer
     )
 
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
@@ -122,12 +121,25 @@ object FieldDrawer : IElementDrawer {
 
 object MethodSignatureDrawer : IJavaxElementDrawer {
     override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
-        val tmp = element.asType().takeIfInstance<Type.MethodType>()
+
+        // TODO:
+        //  1. deal with Method Thrown
+        //  2. it's 'Procedure Oriented'! Enhance it next version
+
+
+        val executableType = element.ifExecutable()
+
         builder.append(" ").append(element.simpleName)
-        if (tmp == null) {
+        if (executableType == null) {
             builder.append(element.asType().toString())
         } else {
-            var info = "(${tmp.argtypes.joinToString { it.asElement().nameRemovedPkg(it.toString()) }}): ${tmp.restype.run { asElement().nameRemovedPkg(toString()) }}"
+            val parametersInfo = executableType.parameterTypes?.joinToString {
+                if (it.kind.isPrimitive) it.toString() else
+                    it.ifElement().nameRemovedPkg(it.toString())
+            } ?: ""
+            val returnInfo = executableType.returnType.run { this.ifElement()?.nameRemovedPkg(toString()) ?: "void" }
+
+            var info = "($parametersInfo): $returnInfo"
 
             context.forEach {
                 val original = it.element?.asType()?.toString()
@@ -143,15 +155,15 @@ object MethodSignatureDrawer : IJavaxElementDrawer {
 
 object MethodDrawer : IElementDrawer {
     private val drawer: List<IJavaxElementDrawer> = arrayListOf(
-            object : IJavaxElementDrawer {
-                override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
-                    builder.append("  {method}")
-                }
-            },
-            //modifiers
-            ModifierDrawer.Static, ModifierDrawer.Abstract,
-            ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
-            MethodSignatureDrawer
+        object : IJavaxElementDrawer {
+            override fun drawAspect(builder: StringBuilder, element: Element, context: MutableSet<UmlElement>) {
+                builder.append("  {method}")
+            }
+        },
+        //modifiers
+        ModifierDrawer.Static, ModifierDrawer.Abstract,
+        ModifierDrawer.Public, ModifierDrawer.Protected, ModifierDrawer.Package, ModifierDrawer.Private,
+        MethodSignatureDrawer
     )
 
     override fun drawAspect(builder: StringBuilder, element: UmlElement, context: MutableSet<UmlElement>) {
