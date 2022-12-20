@@ -87,6 +87,11 @@ class UmlStub private constructor() : UmlElement(null, null) {
         return true
     }
 
+    /*no field declared，thus no necessary to override hashCode*/
+    override fun hashCode(): Int {
+        return super.hashCode()
+    }
+
     override fun umlElement(context: MutableSet<UmlElement>): String {
         return ""
     }
@@ -113,13 +118,6 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
 
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-        return true
-    }
 
     override fun umlElement(context: MutableSet<UmlElement>): String {
         val builder = StringBuilder()
@@ -152,8 +150,6 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
                     methodVisible.find { it.match(e) } != null
                 }
         )
-
-
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
@@ -176,6 +172,26 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as UmlClass
+
+        if (mFields != other.mFields) return false
+        if (mMethods != other.mMethods) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + mFields.hashCode()
+        result = 31 * result + mMethods.hashCode()
+        return result
+    }
+
 }
 
 class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
@@ -185,13 +201,6 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
 
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-        return true
-    }
 
     override fun umlElement(context: MutableSet<UmlElement>): String {
         val builder = StringBuilder()
@@ -246,6 +255,27 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as UmlEnum
+
+        //operation has been overridden,don't wary
+        if (mFields != other.mFields) return false
+        if (mMethods != other.mMethods) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + mFields.hashCode()
+        result = 31 * result + mMethods.hashCode()
+        return result
+    }
+
 }
 
 class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
@@ -255,13 +285,6 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
 
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-        return true
-    }
 
     override fun umlElement(context: MutableSet<UmlElement>): String {
         val builder = StringBuilder()
@@ -304,6 +327,27 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
             }
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        if (!super.equals(other)) return false
+
+        other as UmlInterface
+
+        if (mFields != other.mFields) return false
+        if (mMethods != other.mMethods) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + mFields.hashCode()
+        result = 31 * result + mMethods.hashCode()
+        return result
+    }
+
 
 }
 
