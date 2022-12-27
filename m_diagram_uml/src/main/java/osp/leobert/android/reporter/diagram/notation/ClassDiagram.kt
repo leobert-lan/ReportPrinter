@@ -16,5 +16,3 @@ constructor(
     val ignore: Array<String> = [],
     val ignoreExclude: IgnoreExclude = IgnoreExclude()
 )
-
-// TODO: add ignoreExclude 2022-09-19 19:17:22

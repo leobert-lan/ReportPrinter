@@ -1,6 +1,5 @@
 package osp.leobert.android.reporter.diagram
 
-import androidx.annotation.RequiresApi
 import com.google.auto.service.AutoService
 import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
@@ -20,8 +19,6 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 
 @AutoService(ReporterExtension::class)
-/*skip lint warning!*/
-@RequiresApi(24)
 class DiagramCompiler : ReporterExtension {
 
     val RETURN = "\r\n"
@@ -66,13 +63,13 @@ class DiagramCompiler : ReporterExtension {
 
             sb.clear()
 
-            val graph = diagramGraphByGroup.getOrPut(qualifierName, {
+            val graph = diagramGraphByGroup.getOrPut(qualifierName) {
                 DAG(nameOf = { it.name }, printChunkMax = 10)
-            })
+            }
 
-            val cache = diagramUmlElementCache.getOrPut(qualifierName, {
+            val cache = diagramUmlElementCache.getOrPut(qualifierName) {
                 LinkedHashSet()
-            })
+            }
 
 
             u.forEach {
@@ -180,9 +177,7 @@ class DiagramCompiler : ReporterExtension {
                 it.element.getAnnotation(ClassDiagram::class.java)
             } ?: return@forEach
 
-//            groups.getOrPut(diagram.qualifier) { arrayListOf() }.add(diagram to it)
-
-            groups.getOrDefault(diagram.qualifier, arrayListOf()).apply {
+            (groups[diagram.qualifier] ?: arrayListOf()).apply {
                 this.add(diagram to it)
                 groups[diagram.qualifier] = this
             }

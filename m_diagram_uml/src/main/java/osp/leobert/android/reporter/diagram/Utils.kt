@@ -23,6 +23,11 @@ object Utils {
         return null
     }
 
+    /**
+     * remove the package info of [Element]
+     * todo : it's too specify, far away to use in the whole system!
+     * enhance it in 1.0.2
+     * */
     fun Element?.nameRemovedPkg(ifNull: String): String {
         val fullName = this?.asType()?.toString() ?: ifNull
 
@@ -43,6 +48,17 @@ object Utils {
             null
         }
     }
+
+    fun Element?.ifExecutable(): ExecutableType? {
+        return try {
+            this?.asType().run {
+                MoreTypes.asExecutable(this)
+            }
+        } catch (ignore: Exception) {
+            null
+        }
+    }
+
 
     private abstract class CastingTypeVisitor<T> constructor(private val label: String) : SimpleTypeVisitor6<T, Void?>() {
         override fun defaultAction(e: TypeMirror, v: Void?): T {
@@ -126,11 +142,6 @@ object Utils {
 
         return false
     }
-
-//    fun shouldFieldIgnore():Boolean {
-//
-//        return true
-//    }
 
     inline fun <T> List<T>.forEachWindowSize2(consumer: (first: T, second: T) -> Unit) {
         if (this.size < 2) return
