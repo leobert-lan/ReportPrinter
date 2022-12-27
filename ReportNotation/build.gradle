@@ -25,7 +25,7 @@ EasyPublish {
 
     groupId = "io.github.leobert-lan"
     artifactId = "ReportNotation"
-    version = "1.1.4"
+    version = "1.1.5"
     packaging = "jar"
     siteUrl = "https://github.com/leobert-lan/ReportPrinter"
     gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"

@@ -29,6 +29,7 @@ import javax.lang.model.util.Elements;
 import osp.leobert.android.reportprinter.spi.Model;
 import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
+import osp.leobert.android.reportprinter.spi.IModuleInitializer;
 
 import static osp.leobert.android.report_anno_compiler.processor.Consts.ACTIVE;
 import static osp.leobert.android.report_anno_compiler.processor.Consts.CLZ_WRITER;
@@ -119,6 +120,17 @@ public class ReportProcessor extends AbstractProcessor {
                     .append(t);
             logger.warning(warning.toString());
             extensions = Collections.emptySet();
+        }
+        for (ReporterExtension extension : extensions) {
+            if (extension instanceof IModuleInitializer) {
+                try {
+                    extension.initialize(env);
+                } catch (Throwable t) {
+
+                    logger.warning("initialize "+extension.getClass().getName() +" failed");
+                    logger.error(t);
+                }
+            }
         }
     }
 

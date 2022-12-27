@@ -7,8 +7,8 @@ dependencies {
     api 'com.squareup:javapoet:1.10.0'
 
 
-    api "io.github.leobert-lan:ReportNotation:1.1.4"
-//    api project(":ReportNotation")
+//    api "io.github.leobert-lan:ReportNotation:1.1.4"
+    api project(":ReportNotation")
 
 }
 
