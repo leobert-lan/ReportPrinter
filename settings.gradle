@@ -1,5 +1,6 @@
 include ':samples:kotlin_sample'
 include ':samples:sample'
-include ':ReportNotation', ':report-anno-compiler', ':DemoReporterExt', ':utils_reporter'
+include ':samples:DemoReporterExt'
+include ':ReportNotation', ':report-anno-compiler', ':utils_reporter'
 include ':m_review_reporter'
 include ':m_diagram_uml'

@@ -1,6 +1,11 @@
 package osp.leobert.android.report_anno_compiler.processor;
 
 
+import static osp.leobert.android.report_anno_compiler.processor.Consts.ACTIVE;
+import static osp.leobert.android.report_anno_compiler.processor.Consts.CLZ_WRITER;
+import static osp.leobert.android.report_anno_compiler.processor.Consts.KEY_MODULE_NAME;
+import static osp.leobert.android.report_anno_compiler.processor.Consts.MODE;
+
 import com.google.auto.service.AutoService;
 
 import java.io.File;
@@ -13,7 +18,6 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -26,15 +30,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
+import osp.leobert.android.reportprinter.spi.IModuleInitializer;
 import osp.leobert.android.reportprinter.spi.Model;
 import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
-import osp.leobert.android.reportprinter.spi.IModuleInitializer;
-
-import static osp.leobert.android.report_anno_compiler.processor.Consts.ACTIVE;
-import static osp.leobert.android.report_anno_compiler.processor.Consts.CLZ_WRITER;
-import static osp.leobert.android.report_anno_compiler.processor.Consts.KEY_MODULE_NAME;
-import static osp.leobert.android.report_anno_compiler.processor.Consts.MODE;
 
 /**
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler.processor </p>
@@ -124,7 +123,7 @@ public class ReportProcessor extends AbstractProcessor {
         for (ReporterExtension extension : extensions) {
             if (extension instanceof IModuleInitializer) {
                 try {
-                    extension.initialize(env);
+                    ((IModuleInitializer) extension).initialize(env);
                 } catch (Throwable t) {
 
                     logger.warning("initialize "+extension.getClass().getName() +" failed");

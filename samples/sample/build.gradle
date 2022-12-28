@@ -45,14 +45,13 @@ dependencies {
     api project(':samples:kotlin_sample')
 
     //核心注解处理器
-//    annotationProcessor project(':report-anno-compiler')
-    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
+    annotationProcessor project(':report-anno-compiler')
+//    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
 
-    // 这里偷懒把注解和注解处理器扩展放在了一起，所以既有 implementation 也有 annotation-Processor
 
     //处理器扩展--样例
-    annotationProcessor project(":DemoReporterExt")
-    implementation project(':DemoReporterExt')
+    annotationProcessor project(":samples:DemoReporterExt")
+    implementation project(':samples:DemoReporterExt')
 
     //处理器扩展--util-report
     //    annotationProcessor project(":utils_reporter")

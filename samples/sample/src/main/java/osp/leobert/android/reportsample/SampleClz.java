@@ -8,13 +8,13 @@ import osp.leobert.android.reporter.demoext.Demo;
  * <p><b>Classname:</b> SampleClz </p>
  * Created by leobert on 2018/7/8.
  */
-@Demo(foo = "foo of demo notated at clz")
+@Demo(desc = "foo of demo notated at clz")
 public class SampleClz {
-    @Demo(foo = "foo of demo notated at function")
+    @Demo(desc = "foo of demo notated at function")
     private void foo(Object bar) {
 
     }
 
-    @Demo(foo = "foo of demo notated at field")
+    @Demo(desc = "foo of demo notated at field")
     private int i;
 }

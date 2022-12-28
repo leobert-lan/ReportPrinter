@@ -7,18 +7,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.processing.ProcessingEnvironment;
+
+import osp.leobert.android.reportprinter.spi.IModuleInitializer;
 import osp.leobert.android.reportprinter.spi.Model;
 import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
 
 /**
- * <p><b>Package:</b> osp.leobert.android.reporter.demoext </p>
- * <p><b>Project:</b> ReportPrinter </p>
- * <p><b>Classname:</b> FooReporter </p>
+ * 演示：自行扩展 ReporterExtension， 对自定义的注解规则解析并生成文档
  * Created by leobert on 2018/11/17.
  */
 @AutoService(ReporterExtension.class)
-public class FooReporter implements ReporterExtension {
+public class DemoReporter implements ReporterExtension, IModuleInitializer {
+    ProcessingEnvironment env;
+
     @Override
     public Set<String> applicableAnnotations() {
         return Collections.singleton(Demo.class.getName());
@@ -36,13 +39,19 @@ public class FooReporter implements ReporterExtension {
 
         for (Model model : demoModels) {
             Demo demo = model.getElement().getAnnotation(Demo.class);
-            String foo = demo.foo();
+            String desc = demo.desc();
+            String doc = env.getElementUtils().getDocComment(model.getElement());
+
             stringBuilder.append(model.getElementKind().toString())
                     .append(" :")
                     .append(model.getName())
                     .append("\r\n")
-                    .append("foo:")
-                    .append(foo)
+                    .append("java-doc:\r\n")
+                    .append(doc)
+                    .append("\r\n")
+                    .append("desc:")
+                    .append(desc)
+                    .append("\r\n")
                     .append("\r\n");
         }
 
@@ -52,5 +61,10 @@ public class FooReporter implements ReporterExtension {
                 .fileExt("md")
                 .reportContent(stringBuilder.toString())
                 .build();
+    }
+
+    @Override
+    public void initialize(ProcessingEnvironment env) {
+        this.env = env;
     }
 }
