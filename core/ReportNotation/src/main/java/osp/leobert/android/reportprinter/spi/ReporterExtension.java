@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.processing.RoundEnvironment;
-
 /**
  * <p><b>Package:</b> osp.leobert.android.reportprinter.spi </p>
  * <p><b>Project:</b> ReportPrinter </p>

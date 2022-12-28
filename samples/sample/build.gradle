@@ -44,9 +44,9 @@ dependencies {
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':samples:kotlin_sample')
 
-    //核心注解处理器
-    annotationProcessor project(':report-anno-compiler')
-//    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
+    //核心注解处理器。
+    annotationProcessor project(':core:report-anno-compiler')
+//    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.5"
 
 
     //处理器扩展--样例
