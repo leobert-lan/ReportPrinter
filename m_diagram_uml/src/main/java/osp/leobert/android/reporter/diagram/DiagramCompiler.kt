@@ -1,7 +1,6 @@
 package osp.leobert.android.reporter.diagram
 
 import com.google.auto.service.AutoService
-import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
@@ -9,23 +8,34 @@ import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
 import osp.leobert.android.reporter.diagram.core.Relation
 import osp.leobert.android.reporter.diagram.core.UmlElement
 import osp.leobert.android.reporter.diagram.core.UmlStub
+import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
+import osp.leobert.android.reportprinter.spi.IModuleInitializer
 import osp.leobert.android.reportprinter.spi.Model
 import osp.leobert.android.reportprinter.spi.ReporterExtension
 import osp.leobert.android.reportprinter.spi.Result
+import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 
 @AutoService(ReporterExtension::class)
-class DiagramCompiler : ReporterExtension {
+class DiagramCompiler : ReporterExtension, IModuleInitializer {
 
-    val RETURN = "\r\n"
+    companion object {
+        const val RETURN = "\r\n"
+    }
 
     private val groups = mutableMapOf<String, MutableList<Pair<ClassDiagram, Model>>>()
     private val diagramGraphByGroup = mutableMapOf<String, DAG<UmlElement>>()
     private val diagramUmlElementCache = mutableMapOf<String, MutableSet<UmlElement>>()
+
+    private var env: ProcessingEnvironment? = null
+
+    override fun initialize(env: ProcessingEnvironment?) {
+        this.env = env
+    }
 
     override fun applicableAnnotations(): MutableSet<String> {
         return mutableSetOf(ClassDiagram::class.java.name, GenerateClassDiagram::class.java.name)
@@ -45,7 +55,7 @@ class DiagramCompiler : ReporterExtension {
         diagramGraphByGroup.clear()
         diagramUmlElementCache.clear()
 
-        val sb = StringBuilder()
+        val umlContentBuilder = StringBuilder()
 
         notatedByDiagramNotations.forEach {
             handleGroup(it, candidates)
@@ -61,7 +71,7 @@ class DiagramCompiler : ReporterExtension {
 
         groups.forEach { (qualifierName: String, u: MutableList<Pair<ClassDiagram, Model>>) ->
 
-            sb.clear()
+            umlContentBuilder.clear()
 
             val graph = diagramGraphByGroup.getOrPut(qualifierName) {
                 DAG(nameOf = { it.name }, printChunkMax = 10)
@@ -76,12 +86,12 @@ class DiagramCompiler : ReporterExtension {
                 handleUmlElement(it.second, it.first, graph, cache)
             }
 
-            sb.append("@startuml").append(RETURN)
-            sb.append("'").append(qualifierName).append(RETURN)
+            umlContentBuilder.append("@startuml").append(RETURN)
+            umlContentBuilder.append("'").append(qualifierName).append(RETURN)
 
             // draw all uml-element
             cache.forEach {
-                sb.append(it.umlElement(cache)).append(RETURN)
+                umlContentBuilder.append(it.umlElement(cache)).append(RETURN)
             }
 
             graph.recursive(UmlStub.sInstance, arrayListOf())
@@ -91,7 +101,7 @@ class DiagramCompiler : ReporterExtension {
             graph.deepPathList.forEach { path ->
 
                 //todo debug info
-                sb.append("'<")
+                umlContentBuilder.append("'<")
                     .append(
                         path.joinToString {
                             it.element?.nameRemovedPkg(it.name) ?: it.name
@@ -112,22 +122,22 @@ class DiagramCompiler : ReporterExtension {
                                     relation.format(
                                         first, second, nameGetter
                                     )?.let {
-                                        sb.append(it).append(RETURN)
+                                        umlContentBuilder.append(it).append(RETURN)
                                     }
                                 }
                             }
 
                         } catch (ignore: Exception) {
-                            sb.append(ignore.localizedMessage).append(RETURN)
+                            umlContentBuilder.append(ignore.localizedMessage).append(RETURN)
                         }
                     }
                 }
             }
-            sb.append("@enduml").append(RETURN)
+            umlContentBuilder.append("@enduml").append(RETURN)
 
             resultBuilder.fileBuilder()
                 .reportFileNamePrefix("${qualifierName}Diagram")
-                .reportContent(sb.toString())
+                .reportContent(umlContentBuilder.toString())
                 .fileExt("puml")
                 .build()
         }
