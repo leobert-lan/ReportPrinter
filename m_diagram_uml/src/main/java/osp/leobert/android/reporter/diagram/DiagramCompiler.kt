@@ -4,10 +4,7 @@ import com.google.auto.service.AutoService
 import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
-import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
-import osp.leobert.android.reporter.diagram.core.Relation
-import osp.leobert.android.reporter.diagram.core.UmlElement
-import osp.leobert.android.reporter.diagram.core.UmlStub
+import osp.leobert.android.reporter.diagram.core.*
 import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
@@ -73,17 +70,21 @@ class DiagramCompiler : ReporterExtension, IModuleInitializer {
 
             umlContentBuilder.clear()
 
+            /*子图*/
             val graph = diagramGraphByGroup.getOrPut(qualifierName) {
                 DAG(nameOf = { it.name }, printChunkMax = 10)
             }
 
+            /*图中已解析元素的cache*/
             val cache = diagramUmlElementCache.getOrPut(qualifierName) {
                 LinkedHashSet()
             }
 
+            val context = DrawerContext(env, cache)
+
 
             u.forEach {
-                handleUmlElement(it.second, it.first, graph, cache)
+                handleUmlElement(it.second, it.first, graph, context)
             }
 
             umlContentBuilder.append("@startuml").append(RETURN)
@@ -91,7 +92,7 @@ class DiagramCompiler : ReporterExtension, IModuleInitializer {
 
             // draw all uml-element
             cache.forEach {
-                umlContentBuilder.append(it.umlElement(cache)).append(RETURN)
+                umlContentBuilder.append(it.umlElement(context)).append(RETURN)
             }
 
             graph.recursive(UmlStub.sInstance, arrayListOf())
@@ -145,14 +146,14 @@ class DiagramCompiler : ReporterExtension, IModuleInitializer {
         return resultBuilder.build()
     }
 
-    private fun handleUmlElement(model: Model, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+    private fun handleUmlElement(model: Model, diagram: ClassDiagram, graph: DAG<UmlElement>, context: DrawerContext) {
         IUmlElementHandler.HandlerImpl.handle(
             from = UmlStub.sInstance,
             relation = Relation.Stub,
             element = model.element,
             diagram = diagram,
             graph = graph,
-            cache = cache
+            context = context
         )
 
     }
