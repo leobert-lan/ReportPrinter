@@ -3,7 +3,7 @@ plugins {
     id 'kotlin'
 }
 apply plugin: 'kotlin-kapt'
-apply plugin: 'osp.leobert.maven.publish'
+//apply plugin: 'osp.leobert.maven.publish'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -22,30 +22,30 @@ dependencies {
 
 
 
-EasyPublish {
-    sourceSet = sourceSets.main.java.srcDirs
-    
-    artifact {
-        value = "build/libs/m_diagram_uml.jar"
-    }
-
-    description = "generate report for Class Diagram"
-
-    developer {
-        id = "leobert"
-        name = "leobert"
-        email = "leobert.l@hotmail.com"
-    }
-
-    groupId = "io.github.leobert-lan"
-    artifactId = "class-diagram-reporter"
-    version = "1.0.2-alpha2"
-    packaging = "jar"
-    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
-    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
-    licenseName = "MIT"
-    licenseUrl = "https://opensource.org/licenses/mit-license.html"
-    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
-
-    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
+//EasyPublish {
+//    sourceSet = sourceSets.main.java.srcDirs
+//
+//    artifact {
+//        value = "build/libs/m_diagram_uml.jar"
+//    }
+//
+//    description = "generate report for Class Diagram"
+//
+//    developer {
+//        id = "leobert"
+//        name = "leobert"
+//        email = "leobert.l@hotmail.com"
+//    }
+//
+//    groupId = "io.github.leobert-lan"
+//    artifactId = "class-diagram-reporter"
+//    version = "1.0.2-alpha2"
+//    packaging = "jar"
+//    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
+//    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
+//    licenseName = "MIT"
+//    licenseUrl = "https://opensource.org/licenses/mit-license.html"
+//    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
+//
+//    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//}
