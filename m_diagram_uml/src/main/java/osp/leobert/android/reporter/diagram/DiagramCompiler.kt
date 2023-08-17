@@ -14,6 +14,7 @@ import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
 import osp.leobert.android.reportprinter.spi.Model
 import osp.leobert.android.reportprinter.spi.ReporterExtension
 import osp.leobert.android.reportprinter.spi.Result
+import java.util.Arrays
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -78,6 +79,10 @@ class DiagramCompiler : ReporterExtension {
 
             sb.append("@startuml").append(RETURN)
             sb.append("'").append(qualifierName).append(RETURN)
+//            sb.append("'").append("all ClassDiagram information").append(RETURN)
+//            u.map { it.first }.toSet().forEach {
+//                sb.append("'").append("qualifier:${it.qualifier} ").append("fieldVisible: ${it.fieldVisible.contentToString()}").append(RETURN)
+//            }
 
             // draw all uml-element
             cache.forEach {
