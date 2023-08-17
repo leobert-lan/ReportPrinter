@@ -49,7 +49,7 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
 
         val refers = variableElement.asType().fetchDeclaredType()
 
-        if (!refers.isNullOrEmpty()) {
+        if (refers.isNotEmpty()) {
             refers.forEach { refer ->
                 refer.ifElement()?.let { ele ->
                     IUmlElementHandler.HandlerImpl.handle(from = this, relation = Relation.Dependency,
@@ -80,17 +80,17 @@ class UmlStub private constructor() : UmlElement(null, null) {
         val sInstance = UmlStub()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-        return true
-    }
-
-    /*no field declared，thus no necessary to override hashCode*/
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
+//    override fun equals(other: Any?): Boolean {
+//        if (this === other) return true
+//        if (javaClass != other?.javaClass) return false
+//        if (!super.equals(other)) return false
+//        return true
+//    }
+//
+//    /*no field declared，thus no necessary to override hashCode*/
+//    override fun hashCode(): Int {
+//        return super.hashCode()
+//    }
 
     override fun umlElement(context: MutableSet<UmlElement>): String {
         return ""
@@ -131,11 +131,13 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         val fieldVisible = diagram.fieldVisible
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
-        mFields.addAll(
+        if (fieldVisible.isNotEmpty()) {
+            mFields.addAll(
                 fields.filter { e ->
                     fieldVisible.find { it.match(e) } != null
                 }
-        )
+            )
+        }
 
         fields.forEach {
             handleDependencyViaField(it, diagram, graph, cache)
@@ -145,11 +147,13 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
 
         mMethods.clear()
-        mMethods.addAll(
+        if (methodVisible.isNotEmpty()) {
+            mMethods.addAll(
                 methods.filter { e ->
                     methodVisible.find { it.match(e) } != null
                 }
-        )
+            )
+        }
     }
 
     override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
@@ -172,25 +176,25 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-
-        other as UmlClass
-
-        if (mFields != other.mFields) return false
-        if (mMethods != other.mMethods) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + mFields.hashCode()
-        result = 31 * result + mMethods.hashCode()
-        return result
-    }
+//    override fun equals(other: Any?): Boolean {
+//        if (this === other) return true
+//        if (javaClass != other?.javaClass) return false
+//        if (!super.equals(other)) return false
+//
+//        other as UmlClass
+//
+//        if (mFields != other.mFields) return false
+//        if (mMethods != other.mMethods) return false
+//
+//        return true
+//    }
+//
+//    override fun hashCode(): Int {
+//        var result = super.hashCode()
+//        result = 31 * result + mFields.hashCode()
+//        result = 31 * result + mMethods.hashCode()
+//        return result
+//    }
 
 }
 
@@ -255,26 +259,26 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-
-        other as UmlEnum
-
-        //operation has been overridden,don't wary
-        if (mFields != other.mFields) return false
-        if (mMethods != other.mMethods) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + mFields.hashCode()
-        result = 31 * result + mMethods.hashCode()
-        return result
-    }
+//    override fun equals(other: Any?): Boolean {
+//        if (this === other) return true
+//        if (javaClass != other?.javaClass) return false
+//        if (!super.equals(other)) return false
+//
+//        other as UmlEnum
+//
+//        //operation has been overridden,don't wary
+//        if (mFields != other.mFields) return false
+//        if (mMethods != other.mMethods) return false
+//
+//        return true
+//    }
+//
+//    override fun hashCode(): Int {
+//        var result = super.hashCode()
+//        result = 31 * result + mFields.hashCode()
+//        result = 31 * result + mMethods.hashCode()
+//        return result
+//    }
 
 }
 
@@ -328,25 +332,25 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-
-        other as UmlInterface
-
-        if (mFields != other.mFields) return false
-        if (mMethods != other.mMethods) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + mFields.hashCode()
-        result = 31 * result + mMethods.hashCode()
-        return result
-    }
+//    override fun equals(other: Any?): Boolean {
+//        if (this === other) return true
+//        if (javaClass != other?.javaClass) return false
+//        if (!super.equals(other)) return false
+//
+//        other as UmlInterface
+//
+//        if (mFields != other.mFields) return false
+//        if (mMethods != other.mMethods) return false
+//
+//        return true
+//    }
+//
+//    override fun hashCode(): Int {
+//        var result = super.hashCode()
+//        result = 31 * result + mFields.hashCode()
+//        result = 31 * result + mMethods.hashCode()
+//        return result
+//    }
 
 
 }
