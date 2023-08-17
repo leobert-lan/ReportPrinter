@@ -19,9 +19,6 @@
         <module name="ReportPrinter.utils_reporter.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
-      <module name="ReportPrinter.samples.kotlin_sample" target="11" />
-      <module name="ReportPrinter.samples.sample" target="11" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>

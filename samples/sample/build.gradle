@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "osp.leobert.android.reportsample"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
 
@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':samples:kotlin_sample')
