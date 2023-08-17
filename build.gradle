@@ -15,10 +15,35 @@ buildscript {
     ]
 
     ext.deps = [
-            'guava'  : 'com.google.guava:guava:23.0',
-            'kotlin' : "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+            'guava' : 'com.google.guava:guava:23.0',
+            'kotlin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
     ]
-    
+
+    ext.bomDep = { DependencyHandler dependency, String method, String name ->
+        def debug = true
+
+        def bom_debug = [
+                "ReportNotation"        : project(":ReportNotation"),
+                "reporter-util"         : project(":utils_reporter"),
+                "report-anno-compiler"  : project(':report-anno-compiler'),
+                "reporter-review"       : project(":m_review_reporter"),
+                "class-diagram-reporter": project(":m_diagram_uml")
+        ]
+        def bom_release = [
+                "ReportNotation"        : "io.github.leobert-lan:ReportNotation:1.1.4",
+                "reporter-util"         : "io.github.leobert-lan:reporter-util:1.0.0",
+                "report-anno-compiler"  : "io.github.leobert-lan:report-anno-compiler:1.1.4",
+                "reporter-review"       : "io.github.leobert-lan:reporter-review:1.0.1",
+                "class-diagram-reporter": "io.github.leobert-lan:class-diagram-reporter:1.0.2-alpha2"
+        ]
+        if (debug) {
+            dependency.add(method, bom_debug[name])
+        } else {
+            dependency.add(method, bom_release[name])
+        }
+
+    }
+
     repositories {
         google()
         mavenCentral()

@@ -46,25 +46,32 @@ dependencies {
 
     //核心注解处理器
 //    annotationProcessor project(':report-anno-compiler')
-    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
+//    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
+    bomDep(project.dependencies, "annotationProcessor", "report-anno-compiler")
 
     // 这里偷懒把注解和注解处理器扩展放在了一起，所以既有 implementation 也有 annotation-Processor
 
     //处理器扩展--样例
+    //not conclude in bom
     annotationProcessor project(":DemoReporterExt")
     implementation project(':DemoReporterExt')
 
     //处理器扩展--util-report
     //    annotationProcessor project(":utils_reporter")
-    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
+//    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
     //util-report 注解,
     //    implementation project(':utils_reporter')
-    implementation "io.github.leobert-lan:reporter-util:1.0.0"
+//    implementation "io.github.leobert-lan:reporter-util:1.0.0"
+    bomDep(project.dependencies, "api", "reporter-util")
+    bomDep(project.dependencies, "annotationProcessor", "reporter-util")
 
 
+//    implementation project(":m_diagram_uml")
+//    annotationProcessor project(":m_diagram_uml")
+    bomDep(project.dependencies, "implementation",  "class-diagram-reporter")
+    bomDep(project.dependencies, "annotationProcessor",  "class-diagram-reporter")
 
-    implementation project(":m_diagram_uml")
-    annotationProcessor project(":m_diagram_uml")
-
-
+    bomDep(project.dependencies, "api", "ReportNotation")
+    bomDep(project.dependencies, "implementation", "reporter-review")
+    bomDep(project.dependencies, "annotationProcessor", "reporter-review")
 }
