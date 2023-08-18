@@ -169,7 +169,7 @@ object Utils {
     fun Long.rgba(): String {
         return "#${byteToHex((this ushr 24).toByte())}${byteToHex((this ushr 16).toByte())}${
             byteToHex(
-                (this ushr 0).toByte()
+                (this ushr 8).toByte()
             )
         }${byteToHex(this.toByte())}"
     }
