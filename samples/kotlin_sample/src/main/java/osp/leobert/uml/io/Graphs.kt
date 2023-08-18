@@ -28,9 +28,19 @@ interface Graphs {
     annotation class Okio
 
     @NameSpace("sink",0xFFe5332c)
+//    @ClassDiagram(
+//        qualifier = "Okio-sink",
+//        fieldVisible = [],
+//        methodVisible = [],
+//    ) //i don't want to define a new ClassDiagram, just use the namespaced notation
     annotation class NsSink
 
-    @NameSpace("source",0xff3c08ff)
+    @NameSpace("source",0xff3c082c)
+//    @ClassDiagram(
+//        qualifier = "Okio-source",
+//        fieldVisible = [],
+//        methodVisible = [],
+//    )
     annotation class NsSource
 
 //    @ClassDiagram("RecordDB")
