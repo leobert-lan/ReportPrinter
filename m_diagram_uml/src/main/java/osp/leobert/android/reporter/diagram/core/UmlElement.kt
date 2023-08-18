@@ -1,10 +1,12 @@
 package osp.leobert.android.reporter.diagram.core
 
+import osp.leobert.android.reporter.diagram.PaddingStartStringBuilder
 import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.fetchDeclaredType
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
+import java.lang.Appendable
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.VariableElement
@@ -36,9 +38,9 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
         return result
     }
 
-    abstract fun umlElement(context: MutableSet<UmlElement>): String
+    abstract fun umlElement(context: MutableSet<UmlElement>,padding:Int = 0): String
     abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>)
-    abstract fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>)
+    abstract fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>)
 
     protected fun handleDependencyViaField(variableElement: VariableElement, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
         val vType = variableElement.asType()
@@ -68,7 +70,7 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
         }
     }
 
-    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>)
+    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>)
 }
 
 //inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
@@ -80,17 +82,17 @@ class UmlStub private constructor() : UmlElement(null, null) {
         val sInstance = UmlStub()
     }
 
-    override fun umlElement(context: MutableSet<UmlElement>): String {
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
         return ""
     }
 
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
     }
 
 }
@@ -107,8 +109,8 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
-    override fun umlElement(context: MutableSet<UmlElement>): String {
-        val builder = StringBuilder()
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+        val builder = PaddingStartStringBuilder(padding,StringBuilder())
         drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
@@ -144,7 +146,7 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         }
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
         mFields.let {
             if (it.isNotEmpty())
                 builder.append("  .. fields ..").append(RETURN)
@@ -154,7 +156,7 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         }
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
         mMethods.let {
             if (it.isNotEmpty())
                 builder.append("  .. methods ..").append(RETURN)
@@ -174,8 +176,8 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
-    override fun umlElement(context: MutableSet<UmlElement>): String {
-        val builder = StringBuilder()
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+        val builder = PaddingStartStringBuilder(padding,StringBuilder())
         drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
@@ -211,7 +213,7 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         }
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
         mFields.filter {
             it.asType() == element?.asType()
         }.let {
@@ -231,7 +233,7 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         }
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
         mMethods.let {
             if (it.isNotEmpty())
                 builder.append("  .. methods ..").append(RETURN)
@@ -250,8 +252,8 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
-    override fun umlElement(context: MutableSet<UmlElement>): String {
-        val builder = StringBuilder()
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+        val builder = PaddingStartStringBuilder(padding,StringBuilder())
         drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
@@ -286,7 +288,7 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         }
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
         mFields.let {
             if (it.isNotEmpty())
                 builder.append("  .. fields ..").append(RETURN)
@@ -296,7 +298,7 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         }
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: MutableSet<UmlElement>) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>) {
         mMethods.let {
             if (it.isNotEmpty())
                 builder.append("  .. methods ..").append(RETURN)

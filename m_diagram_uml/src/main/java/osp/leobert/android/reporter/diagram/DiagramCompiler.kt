@@ -1,20 +1,21 @@
 package osp.leobert.android.reporter.diagram
 
 import com.google.auto.service.AutoService
-import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
+import osp.leobert.android.reporter.diagram.Utils.rgba
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
 import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
 import osp.leobert.android.reporter.diagram.core.Relation
 import osp.leobert.android.reporter.diagram.core.UmlElement
 import osp.leobert.android.reporter.diagram.core.UmlStub
+import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
+import osp.leobert.android.reporter.diagram.notation.NameSpace
 import osp.leobert.android.reportprinter.spi.Model
 import osp.leobert.android.reportprinter.spi.ReporterExtension
 import osp.leobert.android.reportprinter.spi.Result
-import java.util.Arrays
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -29,12 +30,18 @@ class DiagramCompiler : ReporterExtension {
     private val diagramUmlElementCache = mutableMapOf<String, MutableSet<UmlElement>>()
 
     override fun applicableAnnotations(): MutableSet<String> {
-        return mutableSetOf(ClassDiagram::class.java.name, GenerateClassDiagram::class.java.name)
+        return mutableSetOf(
+            ClassDiagram::class.java.name, //find custom diagram definition
+            GenerateClassDiagram::class.java.name, // find elements to be drawn in uml
+            NameSpace::class.java.name //find custom namespace in uml
+        )
     }
 
     override fun generateReport(previousData: MutableMap<String, MutableList<Model>>?): Result {
 
-        val notatedByDiagramNotations = filterNotation(previousData)
+        val customClzDiagrams = filterNotation(ClassDiagram::class.java.name, previousData)
+
+        val customNameSpaces = filterNotation(NameSpace::class.java.name, previousData)
 
         val candidates = previousData?.get(GenerateClassDiagram::class.java.name)?.filter {
             it.elementKind == ElementKind.INTERFACE || it.elementKind == ElementKind.CLASS || it.elementKind == ElementKind.ENUM
@@ -46,28 +53,29 @@ class DiagramCompiler : ReporterExtension {
         diagramGraphByGroup.clear()
         diagramUmlElementCache.clear()
 
-        val sb = StringBuilder()
+        val plantUml = StringBuilder()
 
-        notatedByDiagramNotations.forEach {
-            handleGroup(it, candidates)
+        customClzDiagrams.forEach { customDiagram ->
+            groupElementsByUmlQualifier(customDiagram, candidates, groups)
         }
 
         //todo consider alias
         val nameGetter = { element: UmlElement ->
             val removePkg = element.element.nameRemovedPkg(element.name)
-            "\"$removePkg\"".replace(".","$")
+            "\"$removePkg\"".replace(".", "$")
         }
 
         val resultBuilder = Result.newBuilder().handled(true)
 
         groups.forEach { (qualifierName: String, u: MutableList<Pair<ClassDiagram, Model>>) ->
 
-            sb.clear()
+            plantUml.clear()
 
             val graph = diagramGraphByGroup.getOrPut(qualifierName) {
                 DAG(nameOf = { it.name }, printChunkMax = 10)
             }
 
+            // a set of elements by qualifier.
             val cache = diagramUmlElementCache.getOrPut(qualifierName) {
                 LinkedHashSet()
             }
@@ -77,26 +85,70 @@ class DiagramCompiler : ReporterExtension {
                 handleUmlElement(it.second, it.first, graph, cache)
             }
 
-            sb.append("@startuml").append(RETURN)
-            sb.append("'").append(qualifierName).append(RETURN)
-//            sb.append("'").append("all ClassDiagram information").append(RETURN)
-//            u.map { it.first }.toSet().forEach {
-//                sb.append("'").append("qualifier:${it.qualifier} ").append("fieldVisible: ${it.fieldVisible.contentToString()}").append(RETURN)
-//            }
+            plantUml.append("@startuml").append(RETURN)
+            plantUml.append("'").append(qualifierName).append(RETURN)
 
             // draw all uml-element
+
+            // group to different namespace then draw each.
+            val nsConflictMap = mutableMapOf<UmlElement, List<Model>>()
+            val noneNsElements = mutableListOf<UmlElement>()
+            val nameSpacedElements = mutableMapOf<NameSpace, MutableList<UmlElement>>()
             cache.forEach {
-                sb.append(it.umlElement(cache)).append(RETURN)
+                val ele = it.element ?: return@forEach
+                val nsList = customNameSpaces.filter { customNs ->
+                    ele.hasAnnotationOf(customNs.element)
+                }
+
+                if (nsList.isEmpty()) {
+                    noneNsElements.add(it)
+                } else if (nsList.size > 1) {
+                    nsConflictMap[it] = nsList
+                } else {
+                    nameSpacedElements.getOrPut(
+                        nsList.first().element.getAnnotation(NameSpace::class.java)
+                    ) {
+                        mutableListOf()
+                    }.add(it)
+                }
+            }
+
+            // error info:namespace conflict
+            if (nsConflictMap.isNotEmpty()) {
+                plantUml.append("'").append("multi namespace ignored:").append(RETURN)
+                nsConflictMap.forEach { it ->
+                    plantUml.append("'")
+                        .append(it.key.name)
+                        .append(" -> [ ")
+                        .append(
+                            it.value.joinToString(",") { ns -> ns.name }
+                        )
+                        .append(" ]").append(RETURN)
+                }
+            }
+
+            nameSpacedElements.forEach{ entry ->
+                plantUml.append("namespace ").append(entry.key.name).append(" ").append(entry.key.color.rgba()).append(" {").append(RETURN)
+                entry.value.forEach {
+                    plantUml.append(it.umlElement(cache,4)).append(RETURN)
+                }
+                plantUml.append("}").append(RETURN)
+            }
+
+
+//            cache
+            noneNsElements.forEach {
+                plantUml.append(it.umlElement(cache)).append(RETURN)
             }
 
             graph.recursive(UmlStub.sInstance, arrayListOf())
 
             val relationHasDraw = mutableSetOf<Relationship>()
 
+            // draw all relationship
             graph.deepPathList.forEach { path ->
 
-                //todo debug info
-                sb.append("'<")
+                plantUml.append("'<")
                     .append(
                         path.joinToString {
                             it.element?.nameRemovedPkg(it.name) ?: it.name
@@ -117,22 +169,22 @@ class DiagramCompiler : ReporterExtension {
                                     relation.format(
                                         first, second, nameGetter
                                     )?.let {
-                                        sb.append(it).append(RETURN)
+                                        plantUml.append(it).append(RETURN)
                                     }
                                 }
                             }
 
                         } catch (ignore: Exception) {
-                            sb.append(ignore.localizedMessage).append(RETURN)
+                            plantUml.append(ignore.localizedMessage).append(RETURN)
                         }
                     }
                 }
             }
-            sb.append("@enduml").append(RETURN)
+            plantUml.append("@enduml").append(RETURN)
 
             resultBuilder.fileBuilder()
                 .reportFileNamePrefix("${qualifierName}Diagram")
-                .reportContent(sb.toString())
+                .reportContent(plantUml.toString())
                 .fileExt("puml")
                 .build()
         }
@@ -140,7 +192,12 @@ class DiagramCompiler : ReporterExtension {
         return resultBuilder.build()
     }
 
-    private fun handleUmlElement(model: Model, diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>) {
+    private fun handleUmlElement(
+        model: Model,
+        diagram: ClassDiagram,
+        graph: DAG<UmlElement>,
+        cache: MutableSet<UmlElement>
+    ) {
         IUmlElementHandler.HandlerImpl.handle(
             from = UmlStub.sInstance,
             relation = Relation.Stub,
@@ -152,21 +209,46 @@ class DiagramCompiler : ReporterExtension {
 
     }
 
-    private fun filterNotation(previousData: MutableMap<String, MutableList<Model>>?): List<Model> {
-        return previousData?.get(ClassDiagram::class.java.name)?.filter {
+    private fun filterNotation(
+        annotationName: String,
+        previousData: MutableMap<String, MutableList<Model>>?
+    ): List<Model> {
+        return previousData?.get(annotationName)?.filter {
             it.elementKind == ElementKind.ANNOTATION_TYPE
         } ?: emptyList()
     }
 
-    private fun handleGroup(
-        qualifier: Model,
-        candidates: List<Model>
+    /**
+     * group all elements be notated by [GenerateClassDiagram] to different groups
+     *
+     * ```
+     * @ClassDiagram("key")
+     * annotation class Custom
+     *
+     * @Custom
+     * class Foo {}
+     *
+     * @ClassDiagram("k2")
+     * class Bar {}
+     * ```
+     * will separate to 2 group:
+     *
+     * key -> {Foo}
+     * k2 -> {Bar}
+     * */
+    private fun groupElementsByUmlQualifier(
+        customDiagram: Model,
+        candidates: List<Model>,
+        targetGroups: MutableMap<String, MutableList<Pair<ClassDiagram, Model>>>
     ) {
 
         candidates.forEach {
-            val diagram = if (it.element.hasAnnotationOf(qualifier.element)) {
+            val diagram = if (it.element.hasAnnotationOf(customDiagram.element)) {
+                //case Foo
                 findAnnotationByAnnotation(it.element.annotationMirrors, ClassDiagram::class.java)
             } else {
+                //case Bar
+
                 //fixme now it's must be null, cause ClassDiagram only notate at an annotation,consider custom node config and
                 // use config-bean when parse relation!
 
@@ -182,9 +264,9 @@ class DiagramCompiler : ReporterExtension {
                 it.element.getAnnotation(ClassDiagram::class.java)
             } ?: return@forEach
 
-            (groups[diagram.qualifier] ?: arrayListOf()).apply {
+            (targetGroups[diagram.qualifier] ?: arrayListOf()).apply {
                 this.add(diagram to it)
-                groups[diagram.qualifier] = this
+                targetGroups[diagram.qualifier] = this
             }
         }
     }
