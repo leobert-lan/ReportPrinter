@@ -133,6 +133,8 @@ object Utils {
         if (clzIgnorance.isIgnoreExclude(element)) return false
 
         if (element.qualifiedName.toString().startsWith("java.")) return true
+        if (element.qualifiedName.toString().startsWith("javac.")) return true
+        if (element.qualifiedName.toString().startsWith("javax.")) return true
         if (element.qualifiedName.toString().startsWith("android.")) return true
         if (element.qualifiedName.toString().startsWith("androidx.")) return true
 
