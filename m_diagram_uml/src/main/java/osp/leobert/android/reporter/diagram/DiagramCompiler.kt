@@ -55,7 +55,7 @@ class DiagramCompiler : ReporterExtension {
         //todo consider alias
         val nameGetter = { element: UmlElement ->
             val removePkg = element.element.nameRemovedPkg(element.name)
-            "\"$removePkg\""
+            "\"$removePkg\"".replace(".","$")
         }
 
         val resultBuilder = Result.newBuilder().handled(true)
