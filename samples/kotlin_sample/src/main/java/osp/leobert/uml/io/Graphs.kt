@@ -27,6 +27,13 @@ interface Graphs {
     )
     annotation class Okio
 
+    @ClassDiagram(
+        qualifier = "Okio-Data",
+        fieldVisible = [],
+        methodVisible = [],
+    )
+    annotation class OkioData
+
     @NameSpace("sink",0xFFe5332c)
 //    @ClassDiagram(
 //        qualifier = "Okio-sink",

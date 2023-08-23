@@ -15,6 +15,11 @@
  */
 package okio
 
+import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
+import osp.leobert.uml.io.Graphs
+
+@Graphs.OkioData
+@GenerateClassDiagram
 internal class SegmentedByteString internal constructor(
     @Transient internal val segments: Array<ByteArray>,
     @Transient internal val directory: IntArray,
