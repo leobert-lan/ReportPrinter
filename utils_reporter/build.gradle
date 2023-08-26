@@ -1,10 +1,11 @@
 apply plugin: 'java-library'
-apply plugin: 'osp.leobert.maven.publish'
+//apply plugin: 'osp.leobert.maven.publish'
 
 dependencies {
 
 //    implementation(project(":ReportNotation"))
-    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
+//    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
+    bomDep(project.dependencies, "implementation", "ReportNotation")
     implementation 'net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1'
 
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
@@ -16,34 +17,34 @@ sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
 
-
-EasyPublish {
-    sourceSet = sourceSets.main.java.srcDirs
-//    //    notStandardJavaComponent = false
 //
-//    docExcludes = arrayListOf("osp/leobert/android/davinci/*")
+//EasyPublish {
+//    sourceSet = sourceSets.main.java.srcDirs
+////    //    notStandardJavaComponent = false
+////
+////    docExcludes = arrayListOf("osp/leobert/android/davinci/*")
+////
+//    artifact {
+//        value = "build/libs/utils_reporter.jar"
+//    }
 //
-    artifact {
-        value = "build/libs/utils_reporter.jar"
-    }
-
-    description = "generate report for @Util"
-
-    developer {
-        id = "leobert"
-        name = "leobert"
-        email = "leobert.l@hotmail.com"
-    }
-
-    groupId = "io.github.leobert-lan"
-    artifactId = "reporter-util"
-    version = "1.0.1"
-    packaging = "jar"
-    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
-    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
-    licenseName = "MIT"
-    licenseUrl = "https://opensource.org/licenses/mit-license.html"
-    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
-
-    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
+//    description = "generate report for @Util"
+//
+//    developer {
+//        id = "leobert"
+//        name = "leobert"
+//        email = "leobert.l@hotmail.com"
+//    }
+//
+//    groupId = "io.github.leobert-lan"
+//    artifactId = "reporter-util"
+//    version = "1.0.1"
+//    packaging = "jar"
+//    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
+//    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
+//    licenseName = "MIT"
+//    licenseUrl = "https://opensource.org/licenses/mit-license.html"
+//    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
+//
+//    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//}

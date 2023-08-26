@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 34
 
     defaultConfig {
         applicationId "osp.leobert.android.reportsample"
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
 
@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':samples:kotlin_sample')
@@ -47,23 +47,30 @@ dependencies {
     //核心注解处理器。
     annotationProcessor project(':core:report-anno-compiler')
 //    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.5"
+    bomDep(project.dependencies, "annotationProcessor", "report-anno-compiler")
 
 
     //处理器扩展--样例
+    //not conclude in bom
     annotationProcessor project(":samples:DemoReporterExt")
     implementation project(':samples:DemoReporterExt')
 
     //处理器扩展--util-report
     //    annotationProcessor project(":utils_reporter")
-    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
+//    annotationProcessor "io.github.leobert-lan:reporter-util:1.0.0"
     //util-report 注解,
     //    implementation project(':utils_reporter')
-    implementation "io.github.leobert-lan:reporter-util:1.0.0"
+//    implementation "io.github.leobert-lan:reporter-util:1.0.0"
+    bomDep(project.dependencies, "api", "reporter-util")
+    bomDep(project.dependencies, "annotationProcessor", "reporter-util")
 
 
+//    implementation project(":m_diagram_uml")
+//    annotationProcessor project(":m_diagram_uml")
+    bomDep(project.dependencies, "implementation",  "class-diagram-reporter")
+    bomDep(project.dependencies, "annotationProcessor",  "class-diagram-reporter")
 
-    implementation project(":m_diagram_uml")
-    annotationProcessor project(":m_diagram_uml")
-
-
+    bomDep(project.dependencies, "api", "ReportNotation")
+    bomDep(project.dependencies, "implementation", "reporter-review")
+    bomDep(project.dependencies, "annotationProcessor", "reporter-review")
 }

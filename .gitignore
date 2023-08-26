@@ -78,3 +78,6 @@ ReportPrinter/gradle
 /kotlin_sample/Reports/
 /Reports/
 /sample/Reports/
+/samples/kotlin_sample/src/main/java/okio/
+/.idea/
+/samples/kotlin_sample/src/main/java/osp/leobert/uml/io/

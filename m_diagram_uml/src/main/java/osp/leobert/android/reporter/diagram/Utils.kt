@@ -7,7 +7,13 @@ import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.TypeElement
-import javax.lang.model.type.*
+import javax.lang.model.type.ArrayType
+import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.ErrorType
+import javax.lang.model.type.ExecutableType
+import javax.lang.model.type.TypeMirror
+import javax.lang.model.type.TypeVariable
+import javax.lang.model.type.WildcardType
 import javax.lang.model.util.SimpleTypeVisitor6
 
 /**
@@ -60,7 +66,8 @@ object Utils {
     }
 
 
-    private abstract class CastingTypeVisitor<T> constructor(private val label: String) : SimpleTypeVisitor6<T, Void?>() {
+    private abstract class CastingTypeVisitor<T> constructor(private val label: String) :
+        SimpleTypeVisitor6<T, Void?>() {
         override fun defaultAction(e: TypeMirror, v: Void?): T {
             throw IllegalArgumentException("$e does not represent a $label")
         }
@@ -133,6 +140,8 @@ object Utils {
         if (clzIgnorance.isIgnoreExclude(element)) return false
 
         if (element.qualifiedName.toString().startsWith("java.")) return true
+        if (element.qualifiedName.toString().startsWith("javac.")) return true
+        if (element.qualifiedName.toString().startsWith("javax.")) return true
         if (element.qualifiedName.toString().startsWith("android.")) return true
         if (element.qualifiedName.toString().startsWith("androidx.")) return true
 
@@ -153,5 +162,23 @@ object Utils {
             consumer(first, second)
             index++
         }
+    }
+
+    private val hexArray = "0123456789ABCDEF".toCharArray()
+
+    fun Long.rgba(): String {
+        return "#${byteToHex((this ushr 24).toByte())}${byteToHex((this ushr 16).toByte())}${
+            byteToHex(
+                (this ushr 8).toByte()
+            )
+        }${byteToHex(this.toByte())}"
+    }
+
+    fun byteToHex(b: Byte): String {
+        val hexChars = CharArray(2)
+        val v = b.toInt() and 0xFF
+        hexChars[0] = hexArray[v ushr 4]
+        hexChars[1] = hexArray[v and 0x0F]
+        return String(hexChars)
     }
 }

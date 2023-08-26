@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 kapt {
@@ -12,11 +12,11 @@ kapt {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 34
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
 
@@ -35,25 +35,31 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.6.0'
-    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 
-//    api project(':ReportNotation')
-//    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
-//    api project(':utils_reporter')
-    api "io.github.leobert-lan:reporter-util:1.0.0"
-    implementation project(':samples:DemoReporterExt')
+    bomDep(project.dependencies, "api", "ReportNotation")
 
-    kapt project(':core:report-anno-compiler')
-//    kapt "io.github.leobert-lan:report-anno-compiler:1.1.3"
-//    kapt project(":utils_reporter")
-    kapt "io.github.leobert-lan:reporter-util:1.0.0"
-    kapt project(":samples:DemoReporterExt")
+    bomDep(project.dependencies, "api", "reporter-util")
+    bomDep(project.dependencies, "kapt", "reporter-util")
+    bomDep(project.dependencies, "kapt", "report-anno-compiler")
 
-    implementation project(':m_review_reporter')
-    kapt project(':m_review_reporter')
+//    kapt "io.github.leobert-lan:report-anno-compiler:1.1.4"
+//    kapt project(':report-anno-compiler')
 
-    implementation project(":m_diagram_uml")
-    kapt project(":m_diagram_uml")
+    //not conclude in bom
+    implementation project(':DemoReporterExt')
+    kapt project(":DemoReporterExt")
+
+//    implementation project(':m_review_reporter')
+//    kapt project(':m_review_reporter')
+    bomDep(project.dependencies, "implementation", "reporter-review")
+    bomDep(project.dependencies, "kapt", "reporter-review")
+
+//    implementation project(":m_diagram_uml")
+//    kapt project(":m_diagram_uml")
+    bomDep(project.dependencies, "implementation",  "class-diagram-reporter")
+    bomDep(project.dependencies, "kapt",  "class-diagram-reporter")
+
 
 }

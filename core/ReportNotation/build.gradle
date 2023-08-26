@@ -1,5 +1,5 @@
 apply plugin: 'java-library'
-apply plugin: 'osp.leobert.maven.publish'
+//apply plugin: 'osp.leobert.maven.publish'
 
 
 dependencies {
@@ -9,31 +9,29 @@ sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
 
-EasyPublish {
-    sourceSet = sourceSets.main.java.srcDirs
-    artifact {
-        value = "build/libs/ReportNotation.jar"
-    }
-
-    docExcludes= ["osp/leobert/android/*/*"]
-
-    description = "annotation to generate report"
-
-    developer {
-        id = "leobert"
-        name = "leobert"
-        email = "leobert.l@hotmail.com"
-    }
-
-    groupId = "io.github.leobert-lan"
-    artifactId = "ReportNotation"
-    version = "1.1.5"
-    packaging = "jar"
-    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
-    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
-    licenseName = "MIT"
-    licenseUrl = "https://opensource.org/licenses/mit-license.html"
-            //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
-
-    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
+//EasyPublish {
+//    sourceSet = sourceSets.main.java.srcDirs
+//    artifact {
+//        value = "build/libs/ReportNotation.jar"
+//    }
+//
+//    description = "annotation to generate report"
+//
+//    developer {
+//        id = "leobert"
+//        name = "leobert"
+//        email = "leobert.l@hotmail.com"
+//    }
+//
+//    groupId = "io.github.leobert-lan"
+//    artifactId = "ReportNotation"
+//    version = "1.1.4"
+//    packaging = "jar"
+//    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
+//    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
+//    licenseName = "MIT"
+//    licenseUrl = "https://opensource.org/licenses/mit-license.html"
+//            //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
+//
+//    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//}

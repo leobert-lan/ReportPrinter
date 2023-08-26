@@ -1,10 +1,13 @@
 package osp.leobert.android.reporter.diagram.core
 
+import osp.leobert.android.reporter.diagram.PaddingStartStringBuilder
+import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.fetchDeclaredType
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
 import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
+import java.lang.Appendable
 import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.VariableElement
@@ -42,6 +45,9 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
     abstract fun umlElement(context: DrawerContext): String
 
     abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, context: DrawerContext)
+    abstract fun umlElement(context: MutableSet<UmlElement>,padding:Int = 0): String
+    abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>)
+    abstract fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>)
 
     /**
      * 绘制field
@@ -67,7 +73,7 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
 
         val refers = variableElement.asType().fetchDeclaredType()
 
-        if (!refers.isNullOrEmpty()) {
+        if (refers.isNotEmpty()) {
             refers.forEach { refer ->
                 refer.ifElement()?.let { ele ->
                     IUmlElementHandler.HandlerImpl.handle(
@@ -95,6 +101,7 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
         }
     }
 
+    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>)
 }
 
 //inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
@@ -106,29 +113,17 @@ class UmlStub private constructor() : UmlElement(null, null) {
         val sInstance = UmlStub()
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-        return true
-    }
-
-    /*no field declared，thus no necessary to override hashCode*/
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
-
-    override fun umlElement(context: DrawerContext): String {
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
         return ""
     }
 
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, context: DrawerContext) {
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: DrawerContext) {
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: DrawerContext) {
     }
 
 }
@@ -145,6 +140,8 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+        val builder = PaddingStartStringBuilder(padding,StringBuilder())
     override fun umlElement(context: DrawerContext): String {
         val builder = StringBuilder()
         drawer.drawAspect(builder, this, context)
@@ -157,11 +154,13 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         val fieldVisible = diagram.fieldVisible
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
-        mFields.addAll(
+        if (fieldVisible.isNotEmpty()) {
+            mFields.addAll(
             fields.filter { e ->
                 fieldVisible.find { it.match(e) } != null
             }
-        )
+            )
+        }
 
         fields.forEach {
             handleDependencyViaField(it, diagram, graph, context)
@@ -171,14 +170,16 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
 
         mMethods.clear()
-        mMethods.addAll(
+        if (methodVisible.isNotEmpty()) {
+            mMethods.addAll(
             methods.filter { e ->
                 methodVisible.find { it.match(e) } != null
             }
-        )
+            )
+        }
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: DrawerContext) {
         mFields.let {
             if (it.isNotEmpty())
                 builder.append("  .. fields ..").append(RETURN)
@@ -188,7 +189,7 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
         }
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: DrawerContext) {
         mMethods.let {
             if (it.isNotEmpty())
                 builder.append("  .. methods ..").append(RETURN)
@@ -196,26 +197,6 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
                 methodDrawer.invokeDraw(builder, method, context)
             }
         }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-
-        other as UmlClass
-
-        if (mFields != other.mFields) return false
-        if (mMethods != other.mMethods) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + mFields.hashCode()
-        result = 31 * result + mMethods.hashCode()
-        return result
     }
 
 }
@@ -230,6 +211,8 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
 
     override fun umlElement(context: DrawerContext): String {
         val builder = StringBuilder()
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+        val builder = PaddingStartStringBuilder(padding,StringBuilder())
         drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
@@ -237,9 +220,16 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, context: DrawerContext) {
         val tElement = element.ifTypeElement() ?: return
 
+        val fieldVisible = diagram.fieldVisible
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
-        mFields.addAll(fields)
+        if (fieldVisible.isNotEmpty()) {
+            mFields.addAll(
+                fields.filter { e ->
+                    fieldVisible.find { it.match(e) } != null
+                }
+            )
+        }
 
         fields.forEach {
             if (it.asType() != element?.asType())
@@ -248,10 +238,17 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
 
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
         mMethods.clear()
-        mMethods.addAll(methods)
+        val methodVisible = diagram.methodVisible
+        if (methodVisible.isNotEmpty()) {
+            mMethods.addAll(
+                methods.filter { e ->
+                    methodVisible.find { it.match(e) } != null
+                }
+            )
+        }
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: DrawerContext) {
         mFields.filter {
             it.asType() == element?.asType()
         }.let {
@@ -271,7 +268,7 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
         }
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: DrawerContext) {
         mMethods.let {
             if (it.isNotEmpty())
                 builder.append("  .. methods ..").append(RETURN)
@@ -280,28 +277,6 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
             }
         }
     }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-
-        other as UmlEnum
-
-        //operation has been overridden,don't wary
-        if (mFields != other.mFields) return false
-        if (mMethods != other.mMethods) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + mFields.hashCode()
-        result = 31 * result + mMethods.hashCode()
-        return result
-    }
-
 }
 
 class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram, element) {
@@ -312,6 +287,8 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
+    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+        val builder = PaddingStartStringBuilder(padding,StringBuilder())
     override fun umlElement(context: DrawerContext): String {
         val builder = StringBuilder()
         drawer.drawAspect(builder, this, context)
@@ -321,9 +298,16 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     override fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, context: DrawerContext) {
         val tElement = element.ifTypeElement() ?: return
 
+        val fieldVisible = diagram.fieldVisible
         val fields = ElementFilter.fieldsIn(tElement.enclosedElements)
         mFields.clear()
-        mFields.addAll(fields)
+        if (fieldVisible.isNotEmpty()) {
+            mFields.addAll(
+                fields.filter { e ->
+                    fieldVisible.find { it.match(e) } != null
+                }
+            )
+        }
 
         fields.forEach {
             handleDependencyViaField(it, diagram, graph, context)
@@ -331,10 +315,17 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
 
         val methods = ElementFilter.methodsIn(tElement.enclosedElements)
         mMethods.clear()
-        mMethods.addAll(methods)
+        val methodVisible = diagram.methodVisible
+        if (methodVisible.isNotEmpty()) {
+            mMethods.addAll(
+                methods.filter { e ->
+                    methodVisible.find { it.match(e) } != null
+                }
+            )
+        }
     }
 
-    override fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: DrawerContext) {
         mFields.let {
             if (it.isNotEmpty())
                 builder.append("  .. fields ..").append(RETURN)
@@ -344,7 +335,7 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         }
     }
 
-    override fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: DrawerContext) {
+    override fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: DrawerContext) {
         mMethods.let {
             if (it.isNotEmpty())
                 builder.append("  .. methods ..").append(RETURN)
@@ -354,25 +345,25 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
         }
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        if (!super.equals(other)) return false
-
-        other as UmlInterface
-
-        if (mFields != other.mFields) return false
-        if (mMethods != other.mMethods) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = super.hashCode()
-        result = 31 * result + mFields.hashCode()
-        result = 31 * result + mMethods.hashCode()
-        return result
-    }
+//    override fun equals(other: Any?): Boolean {
+//        if (this === other) return true
+//        if (javaClass != other?.javaClass) return false
+//        if (!super.equals(other)) return false
+//
+//        other as UmlInterface
+//
+//        if (mFields != other.mFields) return false
+//        if (mMethods != other.mMethods) return false
+//
+//        return true
+//    }
+//
+//    override fun hashCode(): Int {
+//        var result = super.hashCode()
+//        result = 31 * result + mFields.hashCode()
+//        result = 31 * result + mMethods.hashCode()
+//        return result
+//    }
 
 
 }

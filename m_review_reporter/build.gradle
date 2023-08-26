@@ -3,7 +3,7 @@ plugins {
     id 'kotlin'
 }
 apply plugin: 'kotlin-kapt'
-apply plugin: 'osp.leobert.maven.publish'
+//apply plugin: 'osp.leobert.maven.publish'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -12,7 +12,8 @@ java {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "io.github.leobert-lan:ReportNotation:1.1.3"
+    bomDep(project.dependencies, "implementation", "ReportNotation")
+
     implementation 'net.steppschuh.markdowngenerator:markdowngenerator:1.3.1.1'
 
     kapt 'com.google.auto.service:auto-service:1.0-rc4'
@@ -20,33 +21,33 @@ dependencies {
     implementation 'androidx.annotation:annotation:1.2.0'
 }
 
-EasyPublish {
-    sourceSet = sourceSets.main.java.srcDirs
-//    //    notStandardJavaComponent = false
+//EasyPublish {
+//    sourceSet = sourceSets.main.java.srcDirs
+////    //    notStandardJavaComponent = false
+////
+////    docExcludes = arrayListOf("osp/leobert/android/davinci/*")
+////
+//    artifact {
+//        value = "build/libs/m_review_reporter.jar"
+//    }
 //
-//    docExcludes = arrayListOf("osp/leobert/android/davinci/*")
+//    description = "generate report for @TODO and so on"
 //
-    artifact {
-        value = "build/libs/m_review_reporter.jar"
-    }
-
-    description = "generate report for @TODO and so on"
-
-    developer {
-        id = "leobert"
-        name = "leobert"
-        email = "leobert.l@hotmail.com"
-    }
-
-    groupId = "io.github.leobert-lan"
-    artifactId = "reporter-review"
-    version = "1.0.1"
-    packaging = "jar"
-    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
-    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
-    licenseName = "MIT"
-    licenseUrl = "https://opensource.org/licenses/mit-license.html"
-    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
-
-    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-}
+//    developer {
+//        id = "leobert"
+//        name = "leobert"
+//        email = "leobert.l@hotmail.com"
+//    }
+//
+//    groupId = "io.github.leobert-lan"
+//    artifactId = "reporter-review"
+//    version = "1.0.1"
+//    packaging = "jar"
+//    siteUrl = "https://github.com/leobert-lan/ReportPrinter"
+//    gitUrl = "https://github.com/leobert-lan/ReportPrinter.git"
+//    licenseName = "MIT"
+//    licenseUrl = "https://opensource.org/licenses/mit-license.html"
+//    //"https://github.com/leobert-lan/ReportPrinter/blob/master/LICENSE"
+//
+//    mavenRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+//}
