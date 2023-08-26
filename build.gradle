@@ -23,16 +23,16 @@ buildscript {
         def debug = true
 
         def bom_debug = [
-                "ReportNotation"        : project(":ReportNotation"),
+                "ReportNotation"        : project(":core:ReportNotation"),
                 "reporter-util"         : project(":utils_reporter"),
-                "report-anno-compiler"  : project(':report-anno-compiler'),
+                "report-anno-compiler"  : project(':core:report-anno-compiler'),
                 "reporter-review"       : project(":m_review_reporter"),
                 "class-diagram-reporter": project(":m_diagram_uml")
         ]
         def bom_release = [
-                "ReportNotation"        : "io.github.leobert-lan:ReportNotation:1.1.4",
+                "ReportNotation"        : "io.github.leobert-lan:ReportNotation:1.1.5",
                 "reporter-util"         : "io.github.leobert-lan:reporter-util:1.0.0",
-                "report-anno-compiler"  : "io.github.leobert-lan:report-anno-compiler:1.1.4",
+                "report-anno-compiler"  : "io.github.leobert-lan:report-anno-compiler:1.1.5",
                 "reporter-review"       : "io.github.leobert-lan:reporter-review:1.0.1",
                 "class-diagram-reporter": "io.github.leobert-lan:class-diagram-reporter:1.0.2-alpha2"
         ]

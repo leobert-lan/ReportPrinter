@@ -48,8 +48,8 @@ dependencies {
 //    kapt project(':report-anno-compiler')
 
     //not conclude in bom
-    implementation project(':DemoReporterExt')
-    kapt project(":DemoReporterExt")
+    implementation project(':samples:DemoReporterExt')
+    kapt project(":samples:DemoReporterExt")
 
 //    implementation project(':m_review_reporter')
 //    kapt project(':m_review_reporter')

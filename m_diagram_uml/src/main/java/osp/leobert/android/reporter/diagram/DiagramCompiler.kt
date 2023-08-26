@@ -5,11 +5,6 @@ import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.rgba
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
-import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
-import osp.leobert.android.reporter.diagram.core.Relation
-import osp.leobert.android.reporter.diagram.core.UmlElement
-import osp.leobert.android.reporter.diagram.core.UmlStub
-import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.core.*
 import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
@@ -143,10 +138,10 @@ class DiagramCompiler : ReporterExtension, IModuleInitializer {
                 }
             }
 
-            nameSpacedElements.forEach{ entry ->
+            nameSpacedElements.forEach { entry ->
                 plantUml.append("namespace ").append(entry.key.name).append(" ").append(entry.key.color.rgba()).append(" {").append(RETURN)
                 entry.value.forEach {
-                    plantUml.append(it.umlElement(cache,4)).append(RETURN)
+                    plantUml.append(it.umlElement(context, 4)).append(RETURN)
                 }
                 plantUml.append("}").append(RETURN)
             }
@@ -154,7 +149,7 @@ class DiagramCompiler : ReporterExtension, IModuleInitializer {
 
 //            cache
             noneNsElements.forEach {
-                plantUml.append(it.umlElement(cache)).append(RETURN)
+                plantUml.append(it.umlElement(context)).append(RETURN)
             }
 
             graph.recursive(UmlStub.sInstance, arrayListOf())

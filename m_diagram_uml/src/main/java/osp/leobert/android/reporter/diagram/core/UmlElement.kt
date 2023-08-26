@@ -5,7 +5,6 @@ import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.Utils.fetchDeclaredType
 import osp.leobert.android.reporter.diagram.Utils.ifElement
 import osp.leobert.android.reporter.diagram.Utils.ifTypeElement
-import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import java.lang.Appendable
 import javax.lang.model.element.Element
@@ -42,22 +41,19 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
     /**
      * generate element info in uml
      * */
-    abstract fun umlElement(context: DrawerContext): String
+    abstract fun umlElement(context: DrawerContext,padding:Int = 0): String
 
     abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, context: DrawerContext)
-    abstract fun umlElement(context: MutableSet<UmlElement>,padding:Int = 0): String
-    abstract fun parseFieldAndMethod(diagram: ClassDiagram, graph: DAG<UmlElement>, cache: MutableSet<UmlElement>)
-    abstract fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: MutableSet<UmlElement>)
 
     /**
      * 绘制field
      * */
-    abstract fun drawField(fieldDrawer: FieldDrawer, builder: StringBuilder, context: DrawerContext)
+    abstract fun drawField(fieldDrawer: FieldDrawer, builder: Appendable, context: DrawerContext)
 
     /**
      * 绘制method
      * */
-    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: StringBuilder, context: DrawerContext)
+    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: DrawerContext)
 
     protected fun handleDependencyViaField(
         variableElement: VariableElement,
@@ -101,11 +97,7 @@ abstract class UmlElement(val diagram: ClassDiagram?, val element: Element?) {
         }
     }
 
-    abstract fun drawMethod(methodDrawer: MethodDrawer, builder: Appendable, context: MutableSet<UmlElement>)
 }
-
-//inline operator fun UmlElement.getValue(thisObj: Any?, property: KProperty<*>): String = this.element
-
 
 class UmlStub private constructor() : UmlElement(null, null) {
 
@@ -113,7 +105,7 @@ class UmlStub private constructor() : UmlElement(null, null) {
         val sInstance = UmlStub()
     }
 
-    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+    override fun umlElement(context: DrawerContext, padding: Int): String {
         return ""
     }
 
@@ -140,10 +132,8 @@ class UmlClass(diagram: ClassDiagram, element: Element) : UmlElement(diagram, el
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
-    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+    override fun umlElement(context: DrawerContext, padding: Int): String {
         val builder = PaddingStartStringBuilder(padding,StringBuilder())
-    override fun umlElement(context: DrawerContext): String {
-        val builder = StringBuilder()
         drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
@@ -209,9 +199,7 @@ class UmlEnum(diagram: ClassDiagram, element: Element) : UmlElement(diagram, ele
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
-    override fun umlElement(context: DrawerContext): String {
-        val builder = StringBuilder()
-    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+    override fun umlElement(context: DrawerContext, padding: Int): String {
         val builder = PaddingStartStringBuilder(padding,StringBuilder())
         drawer.drawAspect(builder, this, context)
         return builder.toString()
@@ -287,10 +275,8 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
     private val mFields: MutableSet<VariableElement> = LinkedHashSet()
     private val mMethods: MutableSet<ExecutableElement> = LinkedHashSet()
 
-    override fun umlElement(context: MutableSet<UmlElement>, padding: Int): String {
+    override fun umlElement(context: DrawerContext, padding: Int): String {
         val builder = PaddingStartStringBuilder(padding,StringBuilder())
-    override fun umlElement(context: DrawerContext): String {
-        val builder = StringBuilder()
         drawer.drawAspect(builder, this, context)
         return builder.toString()
     }
@@ -344,27 +330,6 @@ class UmlInterface(diagram: ClassDiagram, element: Element) : UmlElement(diagram
             }
         }
     }
-
-//    override fun equals(other: Any?): Boolean {
-//        if (this === other) return true
-//        if (javaClass != other?.javaClass) return false
-//        if (!super.equals(other)) return false
-//
-//        other as UmlInterface
-//
-//        if (mFields != other.mFields) return false
-//        if (mMethods != other.mMethods) return false
-//
-//        return true
-//    }
-//
-//    override fun hashCode(): Int {
-//        var result = super.hashCode()
-//        result = 31 * result + mFields.hashCode()
-//        result = 31 * result + mMethods.hashCode()
-//        return result
-//    }
-
 
 }
 
