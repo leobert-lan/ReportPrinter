@@ -16,6 +16,39 @@ dependencies {
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+apply plugin: "com.vanniktech.maven.publish"
+mavenPublishing {
+
+    signAllPublications()
+
+    coordinates("io.github.leobert-lan", "reporter-util", "1.0.1")
+
+    pom {
+        name = "reporter-util"
+        description = "generate report for @Util"
+        inceptionYear = "2022"
+        url = "https://github.com/leobert-lan/ReportPrinter"
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/mit-license.html"
+                distribution = "https://opensource.org/licenses/mit-license.html"
+            }
+        }
+        developers {
+            developer {
+                id = "leobert"
+                name = "leobert"
+                url = "https://github.com/leobert-lan/"
+            }
+        }
+        scm {
+            url = "https://github.com/leobert-lan/ReportPrinter"
+            connection = "scm:git:git://github.com/leobert-lan/ReportPrinter.git"
+            developerConnection = "scm:git:ssh://git@github.com/leobert-lan/ReportPrinter.git"
+        }
+    }
+}
 
 //
 //EasyPublish {

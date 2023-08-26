@@ -1,5 +1,6 @@
 apply plugin: 'java-library'
 //apply plugin: 'osp.leobert.maven.publish'
+apply plugin: "com.vanniktech.maven.publish"
 
 dependencies {
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
@@ -16,6 +17,38 @@ dependencies {
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+mavenPublishing {
+
+    signAllPublications()
+
+    coordinates("io.github.leobert-lan", "report-anno-compiler", "$report_anno_compiler_V")
+
+    pom {
+        name = "report-anno-compiiler"
+        description = "annotation compiler to generate report"
+        inceptionYear = "2022"
+        url = "https://github.com/leobert-lan/ReportPrinter"
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/mit-license.html"
+                distribution = "https://opensource.org/licenses/mit-license.html"
+            }
+        }
+        developers {
+            developer {
+                id = "leobert"
+                name = "leobert"
+                url = "https://github.com/leobert-lan/"
+            }
+        }
+        scm {
+            url = "https://github.com/leobert-lan/ReportPrinter"
+            connection = "scm:git:git://github.com/leobert-lan/ReportPrinter.git"
+            developerConnection = "scm:git:ssh://git@github.com/leobert-lan/ReportPrinter.git"
+        }
+    }
+}
 
 
 //EasyPublish {

@@ -20,6 +20,40 @@ dependencies {
 //    implementation 'androidx.annotation:annotation:1.3.0'
 }
 
+apply plugin: "com.vanniktech.maven.publish"
+mavenPublishing {
+
+//    signAllPublications()
+
+    coordinates("io.github.leobert-lan", "class-diagram-reporter", "1.0.3-alpha")
+
+    pom {
+        name = ""
+        description = "generate report for Class Diagram"
+        inceptionYear = "2023"
+        url = "https://github.com/leobert-lan/ReportPrinter"
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/mit-license.html"
+                distribution = "https://opensource.org/licenses/mit-license.html"
+            }
+        }
+        developers {
+            developer {
+                id = "leobert"
+                name = "leobert"
+                url = "https://github.com/leobert-lan/"
+            }
+        }
+        scm {
+            url = "https://github.com/leobert-lan/ReportPrinter"
+            connection = "scm:git:git://github.com/leobert-lan/ReportPrinter.git"
+            developerConnection = "scm:git:ssh://git@github.com/leobert-lan/ReportPrinter.git"
+        }
+    }
+}
+
 
 
 //EasyPublish {

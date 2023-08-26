@@ -1,5 +1,6 @@
 apply plugin: 'java-library'
 //apply plugin: 'osp.leobert.maven.publish'
+apply plugin: "com.vanniktech.maven.publish"
 
 
 dependencies {
@@ -8,6 +9,39 @@ dependencies {
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
+
+mavenPublishing {
+
+    signAllPublications()
+
+    coordinates("io.github.leobert-lan", "ReportNotation", ReportNotation_V)
+
+    pom {
+        name = "ReportNotation"
+        description = "annotation to generate report"
+        inceptionYear = "2022"
+        url = "https://github.com/leobert-lan/ReportPrinter"
+        licenses {
+            license {
+                name = "MIT"
+                url = "https://opensource.org/licenses/mit-license.html"
+                distribution = "https://opensource.org/licenses/mit-license.html"
+            }
+        }
+        developers {
+            developer {
+                id = "leobert"
+                name = "leobert"
+                url = "https://github.com/leobert-lan/"
+            }
+        }
+        scm {
+            url = "https://github.com/leobert-lan/ReportPrinter"
+            connection = "scm:git:git://github.com/leobert-lan/ReportPrinter.git"
+            developerConnection = "scm:git:ssh://git@github.com/leobert-lan/ReportPrinter.git"
+        }
+    }
+}
 
 //EasyPublish {
 //    sourceSet = sourceSets.main.java.srcDirs
