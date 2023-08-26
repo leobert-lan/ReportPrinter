@@ -33,23 +33,28 @@ android {
 }
 
 dependencies {
+    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    //noinspection GradleDependency
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlin_version"))
+
+
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
     bomDep(project.dependencies, "api", "ReportNotation")
+    bomDep(project.dependencies, "kapt", "report-anno-compiler")
 
     bomDep(project.dependencies, "api", "reporter-util")
     bomDep(project.dependencies, "kapt", "reporter-util")
-    bomDep(project.dependencies, "kapt", "report-anno-compiler")
 
 //    kapt "io.github.leobert-lan:report-anno-compiler:1.1.4"
 //    kapt project(':report-anno-compiler')
 
     //not conclude in bom
-    implementation project(':DemoReporterExt')
-    kapt project(":DemoReporterExt")
+    implementation project(':samples:DemoReporterExt')
+    kapt project(":samples:DemoReporterExt")
 
 //    implementation project(':m_review_reporter')
 //    kapt project(':m_review_reporter')

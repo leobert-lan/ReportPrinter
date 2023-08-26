@@ -39,22 +39,23 @@ android {
 }
 
 dependencies {
+    implementation("com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava")
+
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
     //如果某个Module被依赖，这个Module本身也使用打印的话，有些gradle版本可能会出现错误，本身不支持增量编译
     api project(':samples:kotlin_sample')
 
-    //核心注解处理器
-//    annotationProcessor project(':report-anno-compiler')
-//    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.4"
+    //核心注解处理器。
+    annotationProcessor project(':core:report-anno-compiler')
+//    annotationProcessor "io.github.leobert-lan:report-anno-compiler:1.1.5"
     bomDep(project.dependencies, "annotationProcessor", "report-anno-compiler")
 
-    // 这里偷懒把注解和注解处理器扩展放在了一起，所以既有 implementation 也有 annotation-Processor
 
     //处理器扩展--样例
     //not conclude in bom
-    annotationProcessor project(":DemoReporterExt")
-    implementation project(':DemoReporterExt')
+    annotationProcessor project(":samples:DemoReporterExt")
+    implementation project(':samples:DemoReporterExt')
 
     //处理器扩展--util-report
     //    annotationProcessor project(":utils_reporter")

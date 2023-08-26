@@ -10,6 +10,7 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 
 /**
+ * uml类图中元素对应的处理器
  * Created by leobert on 2021/9/18.
  */
 sealed interface IUmlElementHandler {
@@ -20,7 +21,7 @@ sealed interface IUmlElementHandler {
         element: Element,
         diagram: ClassDiagram,
         graph: DAG<UmlElement>,
-        cache: MutableSet<UmlElement>
+        context: DrawerContext,
     )
 
     object ClzHandler : IUmlElementHandler {
@@ -30,7 +31,7 @@ sealed interface IUmlElementHandler {
             element: Element,
             diagram: ClassDiagram,
             graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+            context: DrawerContext
         ) {
             if (shouldIgnoreUmlElement(element, diagram)) return
 
@@ -38,11 +39,11 @@ sealed interface IUmlElementHandler {
             val cur = UmlClass(diagram, element)
             graph.addEdge(Edge(from, cur, relation.type))
 
-            if (cache.contains(cur)) return
-            cache.add(cur)
+            if (context.umlElementCache.contains(cur)) return
+            context.umlElementCache.add(cur)
 
             //parse details
-            cur.parseFieldAndMethod(diagram, graph, cache)
+            cur.parseFieldAndMethod(diagram, graph, context)
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -54,7 +55,7 @@ sealed interface IUmlElementHandler {
                         e,
                         diagram,
                         graph,
-                        cache
+                        context
                     )
                 }
             }
@@ -69,7 +70,7 @@ sealed interface IUmlElementHandler {
                         e,
                         diagram,
                         graph,
-                        cache
+                        context
                     )
                 }
 
@@ -86,7 +87,7 @@ sealed interface IUmlElementHandler {
             element: Element,
             diagram: ClassDiagram,
             graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+            context: DrawerContext
         ) {
             if (shouldIgnoreUmlElement(element, diagram)) return
 
@@ -94,11 +95,11 @@ sealed interface IUmlElementHandler {
             val cur = UmlEnum(diagram, element)
             graph.addEdge(Edge(from, cur, relation.type))
 
-            if (cache.contains(cur)) return
-            cache.add(cur)
+            if (context.umlElementCache.contains(cur)) return
+            context.umlElementCache.add(cur)
 
             //parse details
-            cur.parseFieldAndMethod(diagram, graph, cache)
+            cur.parseFieldAndMethod(diagram, graph, context)
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -113,7 +114,7 @@ sealed interface IUmlElementHandler {
                         e,
                         diagram,
                         graph,
-                        cache
+                        context
                     )
                 }
             }
@@ -130,7 +131,7 @@ sealed interface IUmlElementHandler {
             element: Element,
             diagram: ClassDiagram,
             graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+            context: DrawerContext
         ) {
             if (shouldIgnoreUmlElement(element, diagram)) return
 
@@ -138,11 +139,11 @@ sealed interface IUmlElementHandler {
             val cur = UmlInterface(diagram, element)
             graph.addEdge(Edge(from, cur, relation.type))
 
-            if (cache.contains(cur)) return
-            cache.add(cur)
+            if (context.umlElementCache.contains(cur)) return
+            context.umlElementCache.add(cur)
 
             //parse details
-            cur.parseFieldAndMethod(diagram, graph, cache)
+            cur.parseFieldAndMethod(diagram, graph, context)
 
             //2. parse extends
             // Generalization : only Object for enum
@@ -157,7 +158,7 @@ sealed interface IUmlElementHandler {
                         e,
                         diagram,
                         graph,
-                        cache
+                        context
                     )
                 }
             }
@@ -179,12 +180,12 @@ sealed interface IUmlElementHandler {
             element: Element,
             diagram: ClassDiagram,
             graph: DAG<UmlElement>,
-            cache: MutableSet<UmlElement>
+            context: DrawerContext
         ) {
             if (shouldIgnoreUmlElement(element, diagram)) return
 
             strategy[element.kind]?.handle(
-                from, relation, element, diagram, graph, cache
+                from, relation, element, diagram, graph, context
             )
         }
     }

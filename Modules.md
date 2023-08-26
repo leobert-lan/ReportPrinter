@@ -2,11 +2,13 @@
 
 演示 `使用方式` & `生成结果` 的内容均置于 samples 目录下，详见：[说明](./samples/README.md)
 
-## ReportNotation
+## 核心模块
+
+### ReportNotation
 
 早先的版本中，包含一些注解 & APT插件的必要基础内容，现在仅包含 APT插件的必要基础内容（SPI接口&Bean类）。
 
-## report-anno-compiler
+### report-anno-compiler
 
 现在仅包含 APT插件的核心逻辑
 
@@ -29,18 +31,20 @@ report-anno-compiler 的工作是：
 
 ---
 
-## DemoReporterExt
+## 扩展模块
+
+### DemoReporterExt
 
 一个 `功能插件` 演示module，示范如何自定义一个插件
 
-## m_diagram_uml
+### m_diagram_uml
 
 "类图生成" 功能插件
 
-## m_review_reporter
+### m_review_reporter
 
 code review时做标记的功能插件
 
-## utils_reporter
+### utils_reporter
 
-为助手类生成方法摘要的功能插件
+为助手类生成方法摘要的功能插件。实际使用中作用不明显，可仅当做一个参考示例。

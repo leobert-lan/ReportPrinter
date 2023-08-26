@@ -11,7 +11,7 @@ import javax.lang.model.element.Modifier
 const val RETURN = "\r\n"
 
 interface IElementDrawer {
-    fun drawAspect(builder: Appendable, element: UmlElement, context: MutableSet<UmlElement>)
+    fun drawAspect(builder: Appendable, element: UmlElement, context: DrawerContext)
 }
 
 class ElementDrawer(private val nameDrawer: NameDrawer) : IElementDrawer {
@@ -22,7 +22,15 @@ class ElementDrawer(private val nameDrawer: NameDrawer) : IElementDrawer {
     var methodDrawer: MethodDrawer? = MethodDrawer
 
 
-    override fun drawAspect(builder: Appendable, element: UmlElement, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: UmlElement, context: DrawerContext) {
+        /*
+        * modifiers name {
+        *   ..
+        *   fields
+        *   ..
+        *   methods
+        * }
+        * */
         modifierDrawer.forEach {
             it.drawAspect(builder, element, context)
         }
@@ -36,7 +44,7 @@ class ElementDrawer(private val nameDrawer: NameDrawer) : IElementDrawer {
 }
 
 object AbstractTypeDrawer : IElementDrawer {
-    override fun drawAspect(builder: Appendable, element: UmlElement, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: UmlElement, context: DrawerContext) {
         val isAbsType = element.element?.modifiers?.contains(Modifier.ABSTRACT)
         if (isAbsType == true) {
             builder.append("abstract ")
@@ -48,7 +56,7 @@ object AbstractTypeDrawer : IElementDrawer {
 enum class NameDrawer(val type: String) : IElementDrawer {
     ClzNameDrawer("class "), EnumNameDrawer("enum "), InterfaceNameDrawer("interface ");
 
-    override fun drawAspect(builder: Appendable, element: UmlElement, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: UmlElement, context: DrawerContext) {
         builder.append(type).append("\"")
             .append(
                 element.element.nameRemovedPkg(element.name).replace(".","$")
@@ -58,7 +66,7 @@ enum class NameDrawer(val type: String) : IElementDrawer {
 }
 
 interface IJavaxElementDrawer {
-    fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>)
+    fun drawAspect(builder: Appendable, element: Element, context: DrawerContext)
 }
 
 enum class ModifierDrawer(private val matcher: IModifierMatcher, private val mark: String) : IJavaxElementDrawer {
@@ -70,24 +78,24 @@ enum class ModifierDrawer(private val matcher: IModifierMatcher, private val mar
     Static(IModifierMatcher.Companion.Static, "{static}"),
     Abstract(IModifierMatcher.Companion.Abstract, "{abstract}");
 
-    override fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: Element, context: DrawerContext) {
         if (matcher.match(element))
             builder.append(mark)
     }
 }
 
 object FieldNameDrawer : IJavaxElementDrawer {
-    override fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: Element, context: DrawerContext) {
         builder.append(element.toString())
     }
 }
 
 object FieldTypeDrawer : IJavaxElementDrawer {
-    override fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: Element, context: DrawerContext) {
 
         var name = element.nameRemovedPkg(element.asType().toString())
 
-        context.forEach {
+        context.umlElementCache.forEach {
             val original = it.element?.asType()?.toString()
             if (!original.isNullOrBlank()) {
                 name = name.replace(original, it.name)
@@ -102,7 +110,7 @@ object FieldTypeDrawer : IJavaxElementDrawer {
 object FieldDrawer : IElementDrawer {
     private val drawer: List<IJavaxElementDrawer> = arrayListOf(
         object : IJavaxElementDrawer {
-            override fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+            override fun drawAspect(builder: Appendable, element: Element, context: DrawerContext) {
                 builder.append("  {field}")
             }
         },
@@ -112,11 +120,11 @@ object FieldDrawer : IElementDrawer {
         FieldNameDrawer, FieldTypeDrawer
     )
 
-    override fun drawAspect(builder: Appendable, element: UmlElement, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: UmlElement, context: DrawerContext) {
         element.drawField(this, builder, context)
     }
 
-    fun invokeDraw(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+    fun invokeDraw(builder: Appendable, element: Element, context: DrawerContext) {
         drawer.forEach {
             it.drawAspect(builder, element, context)
         }
@@ -125,7 +133,7 @@ object FieldDrawer : IElementDrawer {
 }
 
 object MethodSignatureDrawer : IJavaxElementDrawer {
-    override fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: Element, context: DrawerContext) {
 
         // TODO:
         //  1. deal with Method Thrown
@@ -146,7 +154,7 @@ object MethodSignatureDrawer : IJavaxElementDrawer {
 
             var info = "($parametersInfo): $returnInfo"
 
-            context.forEach {
+            context.umlElementCache.forEach {
                 val original = it.element?.asType()?.toString()
                 if (!original.isNullOrBlank()) {
                     info = info.replace(original, it.name)
@@ -161,7 +169,7 @@ object MethodSignatureDrawer : IJavaxElementDrawer {
 object MethodDrawer : IElementDrawer {
     private val drawer: List<IJavaxElementDrawer> = arrayListOf(
         object : IJavaxElementDrawer {
-            override fun drawAspect(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+            override fun drawAspect(builder: Appendable, element: Element, context: DrawerContext) {
                 builder.append("  {method}")
             }
         },
@@ -171,11 +179,11 @@ object MethodDrawer : IElementDrawer {
         MethodSignatureDrawer
     )
 
-    override fun drawAspect(builder: Appendable, element: UmlElement, context: MutableSet<UmlElement>) {
+    override fun drawAspect(builder: Appendable, element: UmlElement, context: DrawerContext) {
         element.drawMethod(this, builder, context)
     }
 
-    fun invokeDraw(builder: Appendable, element: Element, context: MutableSet<UmlElement>) {
+    fun invokeDraw(builder: Appendable, element: Element, context: DrawerContext) {
         drawer.forEach {
             it.drawAspect(builder, element, context)
         }

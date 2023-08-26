@@ -5,29 +5,36 @@ import osp.leobert.android.reporter.diagram.Utils.forEachWindowSize2
 import osp.leobert.android.reporter.diagram.Utils.nameRemovedPkg
 import osp.leobert.android.reporter.diagram.Utils.rgba
 import osp.leobert.android.reporter.diagram.Utils.takeIfInstance
-import osp.leobert.android.reporter.diagram.core.IUmlElementHandler
-import osp.leobert.android.reporter.diagram.core.Relation
-import osp.leobert.android.reporter.diagram.core.UmlElement
-import osp.leobert.android.reporter.diagram.core.UmlStub
+import osp.leobert.android.reporter.diagram.core.*
 import osp.leobert.android.reporter.diagram.graph.DAG
 import osp.leobert.android.reporter.diagram.notation.ClassDiagram
 import osp.leobert.android.reporter.diagram.notation.GenerateClassDiagram
 import osp.leobert.android.reporter.diagram.notation.NameSpace
+import osp.leobert.android.reportprinter.spi.IModuleInitializer
 import osp.leobert.android.reportprinter.spi.Model
 import osp.leobert.android.reportprinter.spi.ReporterExtension
 import osp.leobert.android.reportprinter.spi.Result
+import javax.annotation.processing.ProcessingEnvironment
 import javax.lang.model.element.AnnotationMirror
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 
 @AutoService(ReporterExtension::class)
-class DiagramCompiler : ReporterExtension {
+class DiagramCompiler : ReporterExtension, IModuleInitializer {
 
-    val RETURN = "\r\n"
+    companion object {
+        const val RETURN = "\r\n"
+    }
 
     private val groups = mutableMapOf<String, MutableList<Pair<ClassDiagram, Model>>>()
     private val diagramGraphByGroup = mutableMapOf<String, DAG<UmlElement>>()
     private val diagramUmlElementCache = mutableMapOf<String, MutableSet<UmlElement>>()
+
+    private var env: ProcessingEnvironment? = null
+
+    override fun initialize(env: ProcessingEnvironment?) {
+        this.env = env
+    }
 
     override fun applicableAnnotations(): MutableSet<String> {
         return mutableSetOf(
@@ -71,18 +78,22 @@ class DiagramCompiler : ReporterExtension {
 
             plantUml.clear()
 
+            /*子图*/
             val graph = diagramGraphByGroup.getOrPut(qualifierName) {
                 DAG(nameOf = { it.name }, printChunkMax = 10)
             }
 
             // a set of elements by qualifier.
+            /*图中已解析元素的cache*/
             val cache = diagramUmlElementCache.getOrPut(qualifierName) {
                 LinkedHashSet()
             }
 
+            val context = DrawerContext(env, cache)
+
 
             u.forEach {
-                handleUmlElement(it.second, it.first, graph, cache)
+                handleUmlElement(it.second, it.first, graph, context)
             }
 
             plantUml.append("@startuml").append(RETURN)
@@ -127,10 +138,10 @@ class DiagramCompiler : ReporterExtension {
                 }
             }
 
-            nameSpacedElements.forEach{ entry ->
+            nameSpacedElements.forEach { entry ->
                 plantUml.append("namespace ").append(entry.key.name).append(" ").append(entry.key.color.rgba()).append(" {").append(RETURN)
                 entry.value.forEach {
-                    plantUml.append(it.umlElement(cache,4)).append(RETURN)
+                    plantUml.append(it.umlElement(context, 4)).append(RETURN)
                 }
                 plantUml.append("}").append(RETURN)
             }
@@ -138,7 +149,7 @@ class DiagramCompiler : ReporterExtension {
 
 //            cache
             noneNsElements.forEach {
-                plantUml.append(it.umlElement(cache)).append(RETURN)
+                plantUml.append(it.umlElement(context)).append(RETURN)
             }
 
             graph.recursive(UmlStub.sInstance, arrayListOf())
@@ -196,7 +207,7 @@ class DiagramCompiler : ReporterExtension {
         model: Model,
         diagram: ClassDiagram,
         graph: DAG<UmlElement>,
-        cache: MutableSet<UmlElement>
+        context: DrawerContext
     ) {
         IUmlElementHandler.HandlerImpl.handle(
             from = UmlStub.sInstance,
@@ -204,7 +215,7 @@ class DiagramCompiler : ReporterExtension {
             element = model.element,
             diagram = diagram,
             graph = graph,
-            cache = cache
+            context = context
         )
 
     }

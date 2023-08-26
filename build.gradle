@@ -4,35 +4,35 @@ buildscript {
     ext {
         kotlin_version = '1.8.0'
     }
-    ext.versions = [
-            'minSdk'        : 14,
-            'targetSdk'     : 21,
-            'compileSdk'    : 28,
-            'kotlin'        : '1.5.30',
-            'supportLibrary': '27.0.2',
-            'androidPlugin' : '2.3.1',
-            'androidTools'  : '27.0.3',
-    ]
+//    ext.versions = [
+////            'minSdk'        : 14,
+////            'targetSdk'     : 21,
+////            'compileSdk'    : 28,
+//            'kotlin'        : '1.8.0',
+////            'supportLibrary': '27.0.2',
+////            'androidPlugin' : '2.3.1',
+////            'androidTools'  : '27.0.3',
+//    ]
 
-    ext.deps = [
-            'guava' : 'com.google.guava:guava:23.0',
-            'kotlin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
-    ]
+//    ext.deps = [
+//            'guava' : 'com.google.guava:guava:23.0',
+//            'kotlin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+//    ]
 
     ext.bomDep = { DependencyHandler dependency, String method, String name ->
         def debug = true
 
         def bom_debug = [
-                "ReportNotation"        : project(":ReportNotation"),
+                "ReportNotation"        : project(":core:ReportNotation"),
                 "reporter-util"         : project(":utils_reporter"),
-                "report-anno-compiler"  : project(':report-anno-compiler'),
+                "report-anno-compiler"  : project(':core:report-anno-compiler'),
                 "reporter-review"       : project(":m_review_reporter"),
                 "class-diagram-reporter": project(":m_diagram_uml")
         ]
         def bom_release = [
-                "ReportNotation"        : "io.github.leobert-lan:ReportNotation:1.1.4",
+                "ReportNotation"        : "io.github.leobert-lan:ReportNotation:1.1.5",
                 "reporter-util"         : "io.github.leobert-lan:reporter-util:1.0.0",
-                "report-anno-compiler"  : "io.github.leobert-lan:report-anno-compiler:1.1.4",
+                "report-anno-compiler"  : "io.github.leobert-lan:report-anno-compiler:1.1.5",
                 "reporter-review"       : "io.github.leobert-lan:reporter-review:1.0.1",
                 "class-diagram-reporter": "io.github.leobert-lan:class-diagram-reporter:1.0.2-alpha2"
         ]
@@ -65,11 +65,17 @@ buildscript {
     }
 }
 
+//configurations {
+//    configureEach {
+//        exclude group: 'com.google.guava', module: 'listenablefuture'
+//    }
+//}
+
 allprojects {
     repositories {
+        mavenLocal()
         google()
         mavenCentral()
-        mavenLocal()
     }
     tasks.withType(Jar).all {
         duplicatesStrategy 'exclude'
@@ -80,12 +86,12 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-task wrapper4_4(type: Wrapper) {
-    gradleVersion = '4.4'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
-task wrapper5_1_1(type: Wrapper) {
-    gradleVersion = '5.1.1'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
+//task wrapper4_4(type: Wrapper) {
+//    gradleVersion = '4.4'
+//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//}
+//
+//task wrapper5_1_1(type: Wrapper) {
+//    gradleVersion = '5.1.1'
+//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//}
