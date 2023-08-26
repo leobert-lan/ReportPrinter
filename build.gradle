@@ -4,20 +4,20 @@ buildscript {
     ext {
         kotlin_version = '1.8.0'
     }
-    ext.versions = [
-            'minSdk'        : 14,
-            'targetSdk'     : 21,
-            'compileSdk'    : 28,
-            'kotlin'        : '1.5.30',
-            'supportLibrary': '27.0.2',
-            'androidPlugin' : '2.3.1',
-            'androidTools'  : '27.0.3',
-    ]
+//    ext.versions = [
+////            'minSdk'        : 14,
+////            'targetSdk'     : 21,
+////            'compileSdk'    : 28,
+//            'kotlin'        : '1.8.0',
+////            'supportLibrary': '27.0.2',
+////            'androidPlugin' : '2.3.1',
+////            'androidTools'  : '27.0.3',
+//    ]
 
-    ext.deps = [
-            'guava' : 'com.google.guava:guava:23.0',
-            'kotlin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
-    ]
+//    ext.deps = [
+//            'guava' : 'com.google.guava:guava:23.0',
+//            'kotlin': "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}",
+//    ]
 
     ext.bomDep = { DependencyHandler dependency, String method, String name ->
         def debug = true
@@ -65,6 +65,12 @@ buildscript {
     }
 }
 
+//configurations {
+//    configureEach {
+//        exclude group: 'com.google.guava', module: 'listenablefuture'
+//    }
+//}
+
 allprojects {
     repositories {
         mavenLocal()
@@ -80,12 +86,12 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-task wrapper4_4(type: Wrapper) {
-    gradleVersion = '4.4'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
-
-task wrapper5_1_1(type: Wrapper) {
-    gradleVersion = '5.1.1'
-    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
-}
+//task wrapper4_4(type: Wrapper) {
+//    gradleVersion = '4.4'
+//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//}
+//
+//task wrapper5_1_1(type: Wrapper) {
+//    gradleVersion = '5.1.1'
+//    distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+//}
