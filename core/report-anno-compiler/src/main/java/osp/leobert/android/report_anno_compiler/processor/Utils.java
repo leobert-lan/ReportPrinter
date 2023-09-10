@@ -12,7 +12,7 @@ import java.io.OutputStreamWriter;
 
 import javax.lang.model.element.Modifier;
 
-/**
+/*
  * <p><b>Package:</b> osp.leobert.android.issueprint.utils </p>
  * <p><b>Project:</b> IssuePrinter </p>
  * <p><b>Classname:</b> Utils </p>

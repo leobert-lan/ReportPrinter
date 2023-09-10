@@ -4,7 +4,7 @@ import javax.annotation.processing.Messager;
 import javax.tools.Diagnostic;
 
 
-/**
+/*
  * Created by leobert on 2017/9/18.
  */
 public class Logger {

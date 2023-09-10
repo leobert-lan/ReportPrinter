@@ -1,6 +1,6 @@
 package osp.leobert.android.report_anno_compiler.processor;
 
-/**
+/*
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler.processor </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> State </p>

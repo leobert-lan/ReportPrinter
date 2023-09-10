@@ -1,6 +1,6 @@
 package osp.leobert.android.report_anno_compiler.processor;
 
-/**
+/*
  * <p><b>Package:</b> osp.leobert.android.issueprint </p>
  * <p><b>Project:</b> IssuePrinter </p>
  * <p><b>Classname:</b> Consts </p>

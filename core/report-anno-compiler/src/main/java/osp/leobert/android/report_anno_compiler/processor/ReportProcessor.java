@@ -35,7 +35,7 @@ import osp.leobert.android.reportprinter.spi.Model;
 import osp.leobert.android.reportprinter.spi.ReporterExtension;
 import osp.leobert.android.reportprinter.spi.Result;
 
-/**
+/*
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler.processor </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> ReportProcessor </p>

@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import javax.annotation.processing.Filer;
 
-/**
+/*
  * <p><b>Package:</b> osp.leobert.android.report_anno_compiler </p>
  * <p><b>Project:</b> ReportPrinter </p>
  * <p><b>Classname:</b> Writeable </p>
